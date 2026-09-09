@@ -1,0 +1,29 @@
+[
+  {
+    "id": "c818c95b",
+    "created_at": "2026-09-09 13:03:16",
+    "updated_at": "2026-09-09 13:03:59",
+    "company_name": "Facebook",
+    "job_title": "Product Manager",
+    "status": "Deleted on Swooped",
+    "folder_path": "C:\\Users\\giribrothers\\.gemini\\antigravity-ide\\scratch\\resumeFlowMark2.RFM2\\downloads\\Facebook_Product_Manager",
+    "email": "user_7jxu4xwa@uberip.com",
+    "base_resume_id": "4da561fb-3aae-4a2e-b406-3dd0f7599a8e",
+    "resume_pdf": "C:\\Users\\giribrothers\\.gemini\\antigravity-ide\\scratch\\resumeFlowMark2.RFM2\\downloads\\Facebook_Product_Manager\\Facebook_Product_Manager_Tailored_Resume.pdf",
+    "resume_docx": "C:\\Users\\giribrothers\\.gemini\\antigravity-ide\\scratch\\resumeFlowMark2.RFM2\\downloads\\Facebook_Product_Manager\\Facebook_Product_Manager_Tailored_Resume.docx",
+    "cover_pdf": "C:\\Users\\giribrothers\\.gemini\\antigravity-ide\\scratch\\resumeFlowMark2.RFM2\\downloads\\Facebook_Product_Manager\\Facebook_Product_Manager_Cover_Letter.pdf",
+    "cover_docx": "C:\\Users\\giribrothers\\.gemini\\antigravity-ide\\scratch\\resumeFlowMark2.RFM2\\downloads\\Facebook_Product_Manager\\Facebook_Product_Manager_Cover_Letter.docx",
+    "deleted": true
+  },
+  {
+    "id": "13ff9032",
+    "created_at": "2026-09-09 13:01:52",
+    "updated_at": "2026-09-09 13:02:05",
+    "company_name": "Facebook",
+    "job_title": "Product Manager",
+    "status": "Failed: 'NoneType' object has no attribute 'get'",
+    "folder_path": "C:\\Users\\giribrothers\\.gemini\\antigravity-ide\\scratch\\resumeFlowMark2.RFM2\\downloads\\Facebook_Product_Manager",
+    "email": "user_jzifdpge@uberip.com",
+    "base_resume_id": "68e51c70-cf05-477f-934f-edf9642ee25e"
+  }
+]
