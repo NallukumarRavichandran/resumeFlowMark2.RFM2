@@ -207,6 +207,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Credentials Elements
+    const displayCredEmail = document.getElementById('displayCredEmail');
+    const displayCredPass = document.getElementById('displayCredPass');
+    const btnCopyEmail = document.getElementById('btnCopyEmail');
+    const btnCopyPass = document.getElementById('btnCopyPass');
+    const btnDeleteSwooped = document.getElementById('btnDeleteSwooped');
+    const deleteBtnText = document.getElementById('deleteBtnText');
+
+    let currentFolder = '';
+    let activeRunId = '';
+
+    // Clipboard copy buttons
+    btnCopyEmail.addEventListener('click', () => {
+        navigator.clipboard.writeText(displayCredEmail.textContent);
+        btnCopyEmail.textContent = 'Copied!';
+        setTimeout(() => { btnCopyEmail.textContent = 'Copy'; }, 1500);
+    });
+
+    btnCopyPass.addEventListener('click', () => {
+        navigator.clipboard.writeText(displayCredPass.textContent);
+        btnCopyPass.textContent = 'Copied!';
+        setTimeout(() => { btnCopyPass.textContent = 'Copy'; }, 1500);
+    });
+
+    // Delete Account button in results card
+    btnDeleteSwooped.addEventListener('click', async () => {
+        if (!activeRunId) return;
+        if (!confirm('Are you sure you want to permanently delete this account and all its data from Swooped.co?')) return;
+
+        deleteBtnText.textContent = 'Deleting...';
+        btnDeleteSwooped.disabled = true;
+
+        const formData = new FormData();
+        formData.append('account_id', activeRunId);
+
+        try {
+            const resp = await fetch('/api/delete-account', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+            if (data.success) {
+                deleteBtnText.textContent = '✓ Account Deleted on Swooped';
+                btnDeleteSwooped.className = 'btn-delete-swooped deleted';
+                loadLogs();
+            } else {
+                alert('Deletion failed: ' + (data.error || 'Unknown error'));
+                deleteBtnText.textContent = 'Delete Account on Swooped';
+                btnDeleteSwooped.disabled = false;
+            }
+        } catch (e) {
+            console.error('Delete request failed:', e);
+            alert('Failed to connect to server for deletion.');
+            deleteBtnText.textContent = 'Delete Account on Swooped';
+            btnDeleteSwooped.disabled = false;
+        }
+    });
+
     function displayResults(data) {
         emptyState.classList.add('hidden');
         resultsContent.classList.remove('hidden');
@@ -214,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         readyBadge.className = 'badge-ready success';
 
         currentFolder = data.folder_name || '';
+        activeRunId = data.run_id || '';
         displayFolderPath.textContent = `downloads/${currentFolder}/`;
 
         resumeDocTitle.textContent = `${currentFolder}_Tailored_Resume`;
@@ -223,6 +282,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btnDownloadResumeDocx.href = `/api/download/${currentFolder}/${currentFolder}_Tailored_Resume.docx`;
         btnDownloadCoverPdf.href = `/api/download/${currentFolder}/${currentFolder}_Cover_Letter.pdf`;
         btnDownloadCoverDocx.href = `/api/download/${currentFolder}/${currentFolder}_Cover_Letter.docx`;
+
+        // Display credentials
+        if (data.email) displayCredEmail.textContent = data.email;
+        if (data.password) displayCredPass.textContent = data.password;
+
+        btnDeleteSwooped.disabled = false;
+        btnDeleteSwooped.className = 'btn-delete-swooped';
+        deleteBtnText.textContent = 'Delete Account on Swooped';
 
         if (data.cover_letter_text) {
             coverLetterPreviewText.textContent = data.cover_letter_text;
@@ -278,10 +345,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const statusLabel = isDeleted ? '✓ Wiped on Swooped' : item.status;
             const cleanFolder = (item.folder_path ? item.folder_path.split(/[\\/]/).pop() : '') || `${item.company_name}_${item.job_title}`.replace(/ /g, '_');
 
+            const deleteActionHtml = isDeleted ? 
+                `<span class="status-badge status-deleted">✓ Wiped</span>` :
+                `<button type="button" class="btn-table-action btn-table-delete" onclick="triggerAccountDelete('${item.id}')">Delete on Swooped</button>`;
+
             return `
                 <tr>
                     <td style="color: #94a3b8; font-size: 0.8rem;">${item.created_at || 'Just now'}</td>
-                    <td class="temp-email-cell">${item.email || 'Generating...'}</td>
+                    <td>
+                        <div class="temp-email-cell">${item.email || 'Generating...'}</div>
+                        ${item.password ? `<div style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px;">Pass: <code style="color: #cbd5e1;">${item.password}</code></div>` : ''}
+                    </td>
                     <td>
                         <strong style="color: #fff;">${item.company_name || '—'}</strong>
                         <div style="font-size: 0.75rem; color: #94a3b8;">${item.job_title || '—'}</div>
@@ -298,12 +372,36 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="status-badge ${statusClass}">${statusLabel}</span>
                     </td>
                     <td>
-                        <button type="button" class="btn-table-action" onclick="triggerFolderOpen('${cleanFolder}')">Open Folder</button>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn-table-action" onclick="triggerFolderOpen('${cleanFolder}')">Folder</button>
+                            ${deleteActionHtml}
+                        </div>
                     </td>
                 </tr>
             `;
         }).join('');
     }
+
+    window.triggerAccountDelete = async (runId) => {
+        if (!confirm('Permanently delete this account from Swooped.co?')) return;
+        const formData = new FormData();
+        formData.append('account_id', runId);
+        try {
+            const resp = await fetch('/api/delete-account', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+            if (data.success) {
+                loadLogs();
+            } else {
+                alert('Deletion failed: ' + (data.error || 'Unknown error'));
+            }
+        } catch (e) {
+            console.error('Delete failed:', e);
+            alert('Could not connect to delete account.');
+        }
+    };
 
     window.triggerFolderOpen = async (folderName) => {
         const formData = new FormData();

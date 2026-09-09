@@ -270,6 +270,44 @@
                         </div>
                     </div>
 
+                    <!-- Account Credentials & Deletion Control -->
+                    <div class="credentials-card" id="credentialsCard">
+                        <div class="cred-header">
+                            <div class="cred-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                <span>Swooped Account Credentials</span>
+                            </div>
+                            <a href="https://swooped.co/auth/login" target="_blank" class="link-swooped-login">
+                                Login to Swooped.co ↗
+                            </a>
+                        </div>
+                        <div class="cred-details">
+                            <div class="cred-field">
+                                <span class="cred-label">Temp-Mail:</span>
+                                <code class="cred-value" id="displayCredEmail">user@example.com</code>
+                                <button type="button" class="btn-copy" id="btnCopyEmail" title="Copy Email">Copy</button>
+                            </div>
+                            <div class="cred-field">
+                                <span class="cred-label">Password:</span>
+                                <code class="cred-value" id="displayCredPass">••••••••</code>
+                                <button type="button" class="btn-copy" id="btnCopyPass" title="Copy Password">Copy</button>
+                            </div>
+                        </div>
+                        <div class="cred-footer">
+                            <p class="cred-hint">You can log into Swooped.co with these credentials to inspect your documents. When you are done, click Delete Account below to wipe the account.</p>
+                            <button type="button" class="btn-delete-swooped" id="btnDeleteSwooped">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span id="deleteBtnText">Delete Account on Swooped</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Live Document Preview Tabs -->
                     <div class="preview-section">
                         <div class="preview-tabs">
@@ -304,7 +342,7 @@
                     <thead>
                         <tr>
                             <th>Created</th>
-                            <th>Temp-Mail Address</th>
+                            <th>Temp-Mail & Password</th>
                             <th>Company & Role</th>
                             <th>Downloads (PDF & Word)</th>
                             <th>Swooped Status</th>

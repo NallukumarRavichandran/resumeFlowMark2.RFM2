@@ -353,26 +353,20 @@ class SwoopedEngine:
 
             AccountLogger.add_or_update_log(
                 run_id,
-                status="Files Saved",
+                status="Active (Awaiting Delete)",
+                password=password,
+                id_token=self.id_token,
                 resume_pdf=resume_pdf_path,
                 resume_docx=resume_docx_path,
                 cover_pdf=cover_pdf_path,
-                cover_docx=cover_docx_path
+                cover_docx=cover_docx_path,
+                deleted=False
             )
 
-            # -------------------------------------------------------------
-            # STEP 7: Delete Account on Swooped.co (Clean up!)
-            # -------------------------------------------------------------
-            self.log_progress(6, 6, "Deleting account on Swooped.co (wiping all data)...")
-            try:
-                del_res = self._graphql_request("mutation DeleteUser { deleteUser { code success message } }")
-                print(f"[+] Account deleted on Swooped: {del_res}")
-                AccountLogger.add_or_update_log(run_id, status="Deleted on Swooped", deleted=True)
-            except Exception as e:
-                print(f"[-] Deletion warning: {e}")
-                AccountLogger.add_or_update_log(run_id, status="Files Saved (Delete Error)", deleted=False)
-
-            self.log_progress(6, 6, "Generation completed successfully! All documents ready.", {
+            self.log_progress(6, 6, "Generation completed! Credentials ready, awaiting your delete command.", {
+                "run_id": run_id,
+                "email": email,
+                "password": password,
                 "folder_name": folder_name,
                 "folder_path": target_folder,
                 "resume_pdf": os.path.basename(resume_pdf_path),
@@ -385,10 +379,11 @@ class SwoopedEngine:
             return {
                 "success": True,
                 "run_id": run_id,
+                "email": email,
+                "password": password,
                 "folder_name": folder_name,
                 "folder_path": target_folder,
-                "email_used": email,
-                "account_deleted": True
+                "account_deleted": False
             }
 
         except Exception as e:
@@ -397,6 +392,47 @@ class SwoopedEngine:
             AccountLogger.add_or_update_log(run_id, status=f"Failed: {err_msg}")
             self.log_progress(0, 0, f"Error: {err_msg}")
             raise e
+
+    @classmethod
+    def delete_account_by_id(cls, run_id):
+        """
+        Deletes a Swooped account on-demand when the user clicks 'Delete Account'.
+        """
+        logs = AccountLogger.get_logs()
+        target_entry = None
+        for item in logs:
+            if item.get("id") == run_id:
+                target_entry = item
+                break
+
+        if not target_entry:
+            return {"success": False, "error": "Account record not found"}
+
+        id_token = target_entry.get("id_token")
+        if not id_token:
+            return {"success": False, "error": "No session token available for deletion"}
+
+        payload = json.dumps({
+            "query": "mutation DeleteUser { deleteUser { code success message } }"
+        }).encode('utf-8')
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {id_token}',
+            'User-Agent': 'Mozilla/5.0'
+        }
+
+        try:
+            req = urllib.request.Request(SWOOPED_GRAPHQL_URL, data=payload, headers=headers)
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode('utf-8'))
+                print(f"[+] User-triggered delete response: {data}")
+                AccountLogger.add_or_update_log(run_id, status="Deleted on Swooped", deleted=True)
+                return {"success": True, "message": "Account successfully deleted from Swooped.co"}
+        except Exception as e:
+            print(f"[-] Deletion error: {e}")
+            AccountLogger.add_or_update_log(run_id, status=f"Delete Failed: {str(e)}")
+            return {"success": False, "error": str(e)}
 
     def _parse_resume_for_export(self, html_content, company_name, job_title):
         """Extracts text structures from Swooped's preview HTML or builds a clean fallback"""

@@ -967,3 +967,155 @@ body {
 .hidden {
     display: none !important;
 }
+
+/* Credentials Card */
+.credentials-card {
+    background: rgba(97, 106, 232, 0.08);
+    border: 1px solid rgba(97, 106, 232, 0.25);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    margin-bottom: 20px;
+}
+
+.cred-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.cred-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #a5b4fc;
+}
+
+.link-swooped-login {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #38bdf8;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.link-swooped-login:hover {
+    color: #7dd3fc;
+    text-decoration: underline;
+}
+
+.cred-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+@media (max-width: 640px) {
+    .cred-details {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cred-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+}
+
+.cred-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.cred-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: #fff;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-copy {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-copy:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.cred-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 12px;
+}
+
+.cred-hint {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.btn-delete-swooped {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(244, 63, 94, 0.15);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-delete-swooped:hover:not(:disabled) {
+    background: rgba(244, 63, 94, 0.3);
+    color: #fff;
+}
+
+.btn-delete-swooped:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-delete-swooped.deleted {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.3);
+    cursor: default;
+}
+
+.btn-table-delete {
+    background: rgba(244, 63, 94, 0.15) !important;
+    color: #fb7185 !important;
+    border-color: rgba(244, 63, 94, 0.3) !important;
+}
+
+.btn-table-delete:hover {
+    background: rgba(244, 63, 94, 0.3) !important;
+    color: #fff !important;
+}

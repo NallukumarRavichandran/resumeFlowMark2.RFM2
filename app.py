@@ -88,7 +88,7 @@ async def generate_documents(
                         "step": 6,
                         "total": 6,
                         "done": True,
-                        "message": "Completed! Documents ready & account wiped on Swooped.",
+                        "message": "Completed! Documents generated & credentials ready.",
                         "result": res
                     }
                     yield f"data: {json.dumps(final_evt)}\n\n"
@@ -127,6 +127,11 @@ async def open_local_folder(folder_name: str = Form(...)):
         return {"success": True, "path": target_path}
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+@app.post("/api/delete-account")
+async def delete_swooped_account(account_id: str = Form(...)):
+    result = SwoopedEngine.delete_account_by_id(account_id)
+    return result
 
 if __name__ == "__main__":
     import uvicorn
