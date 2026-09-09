@@ -322,14 +322,12 @@ body {
 
 .drop-zone:hover, .drop-zone.dragover {
     border-color: var(--swooped-purple);
-    background: rgba(97, 106, 232, 0.05);
+    background: rgba(97, 106, 232, 0.08);
+    box-shadow: 0 0 16px rgba(97, 106, 232, 0.2);
 }
 
-.file-input {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
+.drop-zone-content {
+    pointer-events: none;
 }
 
 .upload-icon {
@@ -350,9 +348,10 @@ body {
     color: var(--text-primary);
 }
 
-.drop-primary span {
+.browse-link {
     color: #818cf8;
     text-decoration: underline;
+    font-weight: 700;
 }
 
 .drop-secondary {
@@ -378,19 +377,23 @@ body {
     color: #c7d2fe;
     font-weight: 600;
     font-size: 0.88rem;
+    pointer-events: none;
 }
 
 .btn-remove-file {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1rem;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    padding: 4px;
-    transition: color 0.2s;
+    transition: all 0.2s;
 }
 
 .btn-remove-file:hover {
+    background: rgba(239, 68, 68, 0.35);
     color: #fff;
 }
 
@@ -421,16 +424,16 @@ body {
     height: 16px;
 }
 
-.auto-clean-badge {
+.manual-clean-badge {
     display: flex;
     align-items: center;
     gap: 6px;
     font-size: 0.76rem;
     font-weight: 600;
-    color: #fb7185;
-    background: rgba(244, 63, 94, 0.1);
-    border: 1px solid rgba(244, 63, 94, 0.25);
-    padding: 3px 10px;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 4px 10px;
     border-radius: var(--radius-full);
 }
 

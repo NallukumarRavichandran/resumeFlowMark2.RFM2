@@ -63,7 +63,7 @@
                     <div class="form-group">
                         <label class="form-label">Upload Base Resume</label>
                         <div class="drop-zone" id="dropZone">
-                            <input type="file" id="resumeFileInput" accept=".pdf,.docx,.txt" required class="file-input">
+                            <input type="file" id="resumeFileInput" accept=".pdf,.docx,.txt" style="display: none;">
                             <div class="drop-zone-content" id="dropZonePrompt">
                                 <div class="upload-icon">
                                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -72,8 +72,8 @@
                                         <line x1="12" y1="3" x2="12" y2="15"></line>
                                     </svg>
                                 </div>
-                                <p class="drop-primary">Drag & drop your resume file here, or <span>Browse</span></p>
-                                <p class="drop-secondary">Supports PDF, DOCX, or Plain Text</p>
+                                <p class="drop-primary">Drag & drop your resume file here, or <span class="browse-link">Browse Computer</span></p>
+                                <p class="drop-secondary">Supports PDF, Word (.docx), or Text (.txt)</p>
                             </div>
                             <div class="file-selected-badge hidden" id="fileSelectedBadge">
                                 <div class="file-info">
@@ -82,7 +82,7 @@
                                     </svg>
                                     <span id="selectedFileName">resume.pdf</span>
                                 </div>
-                                <button type="button" class="btn-remove-file" id="btnRemoveFile">✕</button>
+                                <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Remove File">✕ Remove</button>
                             </div>
                         </div>
                     </div>
@@ -112,12 +112,11 @@
                             <span class="checkmark"></span>
                             <span>Generate Matching Cover Letter using AI</span>
                         </label>
-                        <div class="auto-clean-badge">
+                        <div class="manual-clean-badge">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                             </svg>
-                            Auto-Deletes Account on Swooped
+                            Manual Deletion Only (Account Stays Active)
                         </div>
                     </div>
 
@@ -162,7 +161,7 @@
                         </div>
                         <div class="timeline-item" id="step6">
                             <div class="step-dot">6</div>
-                            <div class="step-label">Wipe Account on Swooped</div>
+                            <div class="step-label">Credentials Ready (Active)</div>
                         </div>
                     </div>
 

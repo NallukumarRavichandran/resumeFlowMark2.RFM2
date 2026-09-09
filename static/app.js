@@ -39,40 +39,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const logsTableBody = document.getElementById('logsTableBody');
 
     let currentFolder = '';
+    let selectedResumeFile = null;
 
     // ==========================================
     // 1. File Upload & Drag-and-Drop Handling
     // ==========================================
+    dropZone.addEventListener('click', (e) => {
+        // Prevent triggering file browse if clicking remove button
+        if (e.target && (e.target.id === 'btnRemoveFile' || e.target.closest('#btnRemoveFile'))) {
+            return;
+        }
+        resumeFileInput.click();
+    });
+
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => {
             e.preventDefault();
+            e.stopPropagation();
             dropZone.classList.add('dragover');
         });
     });
 
-    ['dragleave', 'drop'].forEach(eventName => {
+    ['dragleave'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => {
             e.preventDefault();
+            e.stopPropagation();
             dropZone.classList.remove('dragover');
         });
     });
 
     dropZone.addEventListener('drop', (e) => {
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            resumeFileInput.files = files;
-            updateFileDisplay(files[0].name);
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            selectedResumeFile = e.dataTransfer.files[0];
+            try {
+                resumeFileInput.files = e.dataTransfer.files;
+            } catch (_) {}
+            updateFileDisplay(selectedResumeFile.name);
         }
     });
 
     resumeFileInput.addEventListener('change', () => {
-        if (resumeFileInput.files.length > 0) {
-            updateFileDisplay(resumeFileInput.files[0].name);
+        if (resumeFileInput.files && resumeFileInput.files[0]) {
+            selectedResumeFile = resumeFileInput.files[0];
+            updateFileDisplay(selectedResumeFile.name);
         }
     });
 
     btnRemoveFile.addEventListener('click', (e) => {
         e.stopPropagation();
+        selectedResumeFile = null;
         resumeFileInput.value = '';
         fileSelectedBadge.classList.add('hidden');
         dropZonePrompt.classList.remove('hidden');
@@ -90,13 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
     generatorForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        if (!resumeFileInput.files.length) {
-            alert('Please select or drop your resume file first.');
+        const fileToUpload = selectedResumeFile || (resumeFileInput.files && resumeFileInput.files[0]);
+        if (!fileToUpload) {
+            alert('Please select or upload your resume file first.');
             return;
         }
 
         const formData = new FormData();
-        formData.append('resume_file', resumeFileInput.files[0]);
+        formData.append('resume_file', fileToUpload);
         formData.append('company_name', companyNameInput.value.trim());
         formData.append('job_title', jobTitleInput.value.trim());
         formData.append('job_description', jobDescriptionInput.value.trim());
@@ -215,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDeleteSwooped = document.getElementById('btnDeleteSwooped');
     const deleteBtnText = document.getElementById('deleteBtnText');
 
-    let currentFolder = '';
     let activeRunId = '';
 
     // Clipboard copy buttons
