@@ -15,6 +15,28 @@ document.addEventListener('DOMContentLoaded', () => {
     progress.scrollTop = progress.scrollHeight;
   }
 
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[character]));
+  }
+
+  async function copyValue(button) {
+    const value = button.dataset.copy;
+    try {
+      await navigator.clipboard.writeText(value);
+      button.textContent = 'Copied';
+    } catch {
+      button.textContent = 'Copy failed';
+    }
+    window.setTimeout(() => { button.textContent = 'Copy'; }, 1400);
+  }
+
+  result.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-copy]');
+    if (button) copyValue(button);
+  });
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const data = new FormData();
@@ -52,11 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
           if (payload.done && payload.result) {
             const r = payload.result;
             const folder = encodeURIComponent(r.folder_name);
-            result.innerHTML = `<strong>Completed</strong><br><span>${r.email}</span><br>` +
+            const email = escapeHtml(r.email);
+            const password = escapeHtml(r.password);
+            result.innerHTML = `<strong>Completed</strong>` +
+              `<p class="credential-warning">Temporary Swooped account — copy these credentials and keep them private.</p>` +
+              `<div class="credential-row"><span>Email</span><code>${email}</code><button type="button" data-copy="${email}">Copy</button></div>` +
+              `<div class="credential-row"><span>Password</span><code>${password}</code><button type="button" data-copy="${password}">Copy</button></div>` +
+              `<div class="download-links">` +
               `<a href="/api/download/${folder}/${encodeURIComponent(r.folder_name + '_Tailored_Resume.pdf')}">Download Swooped Resume PDF</a> · ` +
               `<a href="/api/download/${folder}/${encodeURIComponent(r.folder_name + '_Tailored_Resume.docx')}">Download Resume DOCX</a><br>` +
               `<a href="/api/download/${folder}/${encodeURIComponent(r.folder_name + '_Cover_Letter.pdf')}">Download Swooped Cover Letter PDF</a> · ` +
-              `<a href="/api/download/${folder}/${encodeURIComponent(r.folder_name + '_Cover_Letter.docx')}">Download Cover Letter DOCX</a>`;
+              `<a href="/api/download/${folder}/${encodeURIComponent(r.folder_name + '_Cover_Letter.docx')}">Download Cover Letter DOCX</a></div>`;
             result.classList.remove('hidden');
           }
         }

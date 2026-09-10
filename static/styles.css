@@ -43,6 +43,12 @@ a { color: var(--link); }
 .progress-list { max-height: 190px; overflow: auto; }
 .progress-item { padding: 8px 0; border-bottom: 1px solid #292d30; color: #d8dcdf; font-size: 12px; }
 .result-box { margin-top: 14px; padding: 12px; border: 1px solid #397451; border-radius: 7px; color: #c3f4d1; font-size: 12px; line-height: 1.9; }
+.credential-warning { margin: 4px 0 8px; color: #f4c98c; font-size: 11px; }
+.credential-row { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 8px; align-items: center; margin: 6px 0; }
+.credential-row span { color: #b9c0c5; }
+.credential-row code { overflow: auto; padding: 4px 6px; border-radius: 4px; color: #f1f3f4; background: #202326; font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+.credential-row button { padding: 4px 8px; border: 1px solid #53605a; border-radius: 4px; color: #d9f5df; background: #24382a; cursor: pointer; font-size: 11px; }
+.download-links { margin-top: 8px; }
 .hidden { display: none !important; }
 @media (max-width: 760px) {
   .fast-layout { grid-template-columns: 1fr; padding: 18px 12px; }
