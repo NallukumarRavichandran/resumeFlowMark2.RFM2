@@ -53,8 +53,8 @@ print("Files created:", files)
 
 # Assertions
 assert any(f.endswith("_Tailored_Resume.pdf") for f in files), "Missing Resume PDF"
-assert any(f.endswith("_Tailored_Resume.docx") for f in files), "Missing Resume DOCX"
 assert any(f.endswith("_Cover_Letter.pdf") for f in files), "Missing Cover Letter PDF"
+assert any(f.endswith("_Tailored_Resume.docx") for f in files), "Missing Resume DOCX"
 assert any(f.endswith("_Cover_Letter.docx") for f in files), "Missing Cover Letter DOCX"
 
-print("\n[SUCCESS] ALL 4 FILES (.PDF & .DOCX) SUCCESSFULLY VERIFIED ON DISK!")
+print("\n[SUCCESS] REAL SWOOPED PDFS AND DOCX EXPORTS VERIFIED ON DISK!")

@@ -26,36 +26,37 @@ class TempMailService:
             with urllib.request.urlopen(domain_req, timeout=5) as resp:
                 domains_data = json.loads(resp.read().decode('utf-8'))
                 domains = domains_data.get('hydra:member', [])
-                if domains:
-                    domain = domains[0]['domain']
+                for domain_entry in domains[:5]:
+                    domain = domain_entry['domain']
                     username = f"user_{cls._random_str(8)}"
                     email = f"{username}@{domain}"
                     password = f"P@ss{cls._random_str(6)}1"
-                    
                     reg_payload = json.dumps({"address": email, "password": password}).encode('utf-8')
                     reg_req = urllib.request.Request(
                         "https://api.mail.tm/accounts",
                         data=reg_payload,
                         headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0'}
                     )
-                    with urllib.request.urlopen(reg_req, timeout=5) as reg_resp:
-                        if reg_resp.status in (200, 201):
-                            # Authenticate to get token
-                            auth_payload = json.dumps({"address": email, "password": password}).encode('utf-8')
-                            auth_req = urllib.request.Request(
-                                "https://api.mail.tm/token",
-                                data=auth_payload,
-                                headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0'}
-                            )
-                            with urllib.request.urlopen(auth_req, timeout=5) as auth_resp:
-                                token_data = json.loads(auth_resp.read().decode('utf-8'))
-                                token = token_data.get('token')
-                                return {
-                                    "email": email,
-                                    "password": password,
-                                    "provider": "mail.tm",
-                                    "token": token
-                                }
+                    try:
+                        with urllib.request.urlopen(reg_req, timeout=5) as reg_resp:
+                            if reg_resp.status not in (200, 201):
+                                continue
+                        auth_payload = json.dumps({"address": email, "password": password}).encode('utf-8')
+                        auth_req = urllib.request.Request(
+                            "https://api.mail.tm/token",
+                            data=auth_payload,
+                            headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0'}
+                        )
+                        with urllib.request.urlopen(auth_req, timeout=5) as auth_resp:
+                            token_data = json.loads(auth_resp.read().decode('utf-8'))
+                        return {
+                            "email": email,
+                            "password": password,
+                            "provider": "mail.tm",
+                            "token": token_data.get('token')
+                        }
+                    except Exception:
+                        continue
         except Exception:
             pass
 
@@ -79,17 +80,7 @@ class TempMailService:
         except Exception:
             pass
 
-        # Reliable resilient fallback
-        domains = ["tempinbox.org", "disposablemail.net", "dropmail.me", "vmani.com"]
-        domain = random.choice(domains)
-        email = f"app_{cls._random_str(9)}@{domain}"
-        password = f"P@ssw0rd{cls._random_str(5)}9!"
-        return {
-            "email": email,
-            "password": password,
-            "provider": "generated_tempmail",
-            "token": None
-        }
+        raise RuntimeError("No usable temporary-mail provider is currently available.")
 
     @classmethod
     def check_messages(cls, email_account):

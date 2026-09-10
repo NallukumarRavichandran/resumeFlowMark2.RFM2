@@ -1,363 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResumeFlow Mark 2 — Direct Swooped.co Tailored Generator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ResumeFlow — Fast Swooped Browser Pipeline</title>
+  <link rel="stylesheet" href="/static/styles.css?v=20260910-browser-preview">
 </head>
-<body>
-    <!-- Background Glow Elements -->
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
-
-    <div class="app-container">
-        <!-- Top Navigation -->
-        <header class="navbar">
-            <div class="brand">
-                <div class="brand-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="brand-title">ResumeFlow <span class="highlight">Mark 2</span></h1>
-                    <p class="brand-subtitle">Direct Automation for <span class="badge-swooped">https://swooped.co</span></p>
-                </div>
-            </div>
-            <div class="nav-actions">
-                <div class="system-status">
-                    <span class="status-dot"></span>
-                    <span class="status-text">Swooped Engine Live</span>
-                </div>
-                <a href="https://github.com/NallukumarRavichandran/resumeFlowMark2.RFM2.git" target="_blank" class="repo-badge">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                    <span>resumeFlowMark2</span>
-                </a>
-            </div>
-        </header>
-
-        <!-- Main Workspace Layout -->
-        <main class="main-grid">
-            <!-- Left Column: Generator Form & Live Status -->
-            <section class="card form-card">
-                <div class="card-header">
-                    <h2>Create Tailored Application</h2>
-                    <div class="format-tags">
-                        <span class="tag tag-pdf">PDF Output</span>
-                        <span class="tag tag-docx">Word (.docx) Output</span>
-                    </div>
-                </div>
-
-                <form id="generatorForm" class="generator-form">
-                    <!-- File Upload Box -->
-                    <div class="form-group">
-                        <label class="form-label">Upload Base Resume</label>
-                        <div class="drop-zone" id="dropZone">
-                            <input type="file" id="resumeFileInput" accept=".pdf,.docx,.txt" style="display: none;">
-                            <div class="drop-zone-content" id="dropZonePrompt">
-                                <div class="upload-icon">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="17 8 12 3 7 8"></polyline>
-                                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                                    </svg>
-                                </div>
-                                <p class="drop-primary">Drag & drop your resume file here, or <span class="browse-link">Browse Computer</span></p>
-                                <p class="drop-secondary">Supports PDF, Word (.docx), or Text (.txt)</p>
-                            </div>
-                            <div class="file-selected-badge hidden" id="fileSelectedBadge">
-                                <div class="file-info">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    </svg>
-                                    <span id="selectedFileName">resume.pdf</span>
-                                </div>
-                                <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Remove File">✕ Remove</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Target Company & Role -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label" for="companyName">Target Company</label>
-                            <input type="text" id="companyName" class="form-control" placeholder="e.g. Facebook, Google, Netflix" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="jobTitle">Job Title / Role</label>
-                            <input type="text" id="jobTitle" class="form-control" placeholder="e.g. Product Manager, Full Stack Dev" required>
-                        </div>
-                    </div>
-
-                    <!-- Job Description -->
-                    <div class="form-group">
-                        <label class="form-label" for="jobDescription">Target Job Description</label>
-                        <textarea id="jobDescription" rows="5" class="form-control textarea" placeholder="Paste the job description or role requirements here..." required></textarea>
-                    </div>
-
-                    <!-- Options & Features -->
-                    <div class="features-row">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="checkCoverLetter" checked disabled>
-                            <span class="checkmark"></span>
-                            <span>Generate Matching Cover Letter using AI</span>
-                        </label>
-                        <div class="manual-clean-badge">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                            </svg>
-                            Manual Deletion Only (Account Stays Active)
-                        </div>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" id="btnSubmit" class="btn-primary">
-                        <span class="btn-text">Generate on Swooped.co & Download</span>
-                        <div class="btn-spinner hidden" id="btnSpinner"></div>
-                    </button>
-                </form>
-
-                <!-- Live Progress Timeline Card -->
-                <div class="progress-card hidden" id="progressCard">
-                    <div class="progress-header">
-                        <h3>Swooped.co Automation Pipeline</h3>
-                        <span class="step-indicator" id="stepIndicator">Step 1 of 6</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="progressBarFill" style="width: 16%;"></div>
-                    </div>
-
-                    <!-- Timeline Steps -->
-                    <div class="timeline" id="timeline">
-                        <div class="timeline-item" id="step1">
-                            <div class="step-dot">1</div>
-                            <div class="step-label">Provision Temp-Mail</div>
-                        </div>
-                        <div class="timeline-item" id="step2">
-                            <div class="step-dot">2</div>
-                            <div class="step-label">Register on Swooped</div>
-                        </div>
-                        <div class="timeline-item" id="step3">
-                            <div class="step-dot">3</div>
-                            <div class="step-label">Upload Base Resume</div>
-                        </div>
-                        <div class="timeline-item" id="step4">
-                            <div class="step-dot">4</div>
-                            <div class="step-label">AI Tailoring on Swooped</div>
-                        </div>
-                        <div class="timeline-item" id="step5">
-                            <div class="step-dot">5</div>
-                            <div class="step-label">Save .PDF & .DOCX</div>
-                        </div>
-                        <div class="timeline-item" id="step6">
-                            <div class="step-dot">6</div>
-                            <div class="step-label">Credentials Ready (Active)</div>
-                        </div>
-                    </div>
-
-                    <div class="live-log-box" id="liveLogBox">
-                        <span class="log-cursor">></span>
-                        <span id="logText">Initializing automation engine...</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Right Column: Generated Output Showcase -->
-            <section class="card results-card" id="resultsCard">
-                <div class="card-header">
-                    <h2>Generated Documents</h2>
-                    <span class="badge-ready" id="readyBadge">Awaiting Input</span>
-                </div>
-
-                <div class="empty-state" id="emptyState">
-                    <div class="empty-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                    </div>
-                    <p class="empty-title">No documents generated yet</p>
-                    <p class="empty-desc">Upload your resume and submit target company details. Swooped.co will generate the tailored resume & cover letter directly.</p>
-                </div>
-
-                <!-- Active Results Showcase (Hidden until ready) -->
-                <div class="results-content hidden" id="resultsContent">
-                    <div class="output-folder-banner">
-                        <div class="folder-meta">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                            <div>
-                                <p class="folder-label">Saved to Local Folder</p>
-                                <p class="folder-path" id="displayFolderPath">downloads/Company_Role/</p>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-open-folder" id="btnOpenFolder">
-                            <span>Open in Explorer</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                <polyline points="15 3 21 3 21 9"></polyline>
-                                <line x1="10" y1="14" x2="21" y2="3"></line>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Document Download Cards -->
-                    <div class="doc-cards-grid">
-                        <!-- Resume Card -->
-                        <div class="doc-card">
-                            <div class="doc-card-header">
-                                <div class="doc-badge badge-resume">Tailored Resume</div>
-                                <span class="doc-tag">ATS-Optimized</span>
-                            </div>
-                            <h4 id="resumeDocTitle">Company_Role_Tailored_Resume</h4>
-                            <div class="download-actions">
-                                <a id="btnDownloadResumePdf" href="#" class="btn-download btn-pdf">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                    Download PDF
-                                </a>
-                                <a id="btnDownloadResumeDocx" href="#" class="btn-download btn-docx">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                    Download Word (.docx)
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Cover Letter Card -->
-                        <div class="doc-card">
-                            <div class="doc-card-header">
-                                <div class="doc-badge badge-cover">Cover Letter</div>
-                                <span class="doc-tag">AI Generated</span>
-                            </div>
-                            <h4 id="coverDocTitle">Company_Role_Cover_Letter</h4>
-                            <div class="download-actions">
-                                <a id="btnDownloadCoverPdf" href="#" class="btn-download btn-pdf">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                    Download PDF
-                                </a>
-                                <a id="btnDownloadCoverDocx" href="#" class="btn-download btn-docx">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                    Download Word (.docx)
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Account Credentials & Deletion Control -->
-                    <div class="credentials-card" id="credentialsCard">
-                        <div class="cred-header">
-                            <div class="cred-title">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                </svg>
-                                <span>Swooped Account Credentials</span>
-                            </div>
-                            <a href="https://swooped.co/auth/login" target="_blank" class="link-swooped-login">
-                                Login to Swooped.co ↗
-                            </a>
-                        </div>
-                        <div class="cred-details">
-                            <div class="cred-field">
-                                <span class="cred-label">Temp-Mail:</span>
-                                <code class="cred-value" id="displayCredEmail">user@example.com</code>
-                                <button type="button" class="btn-copy" id="btnCopyEmail" title="Copy Email">Copy</button>
-                            </div>
-                            <div class="cred-field">
-                                <span class="cred-label">Password:</span>
-                                <code class="cred-value" id="displayCredPass">••••••••</code>
-                                <button type="button" class="btn-copy" id="btnCopyPass" title="Copy Password">Copy</button>
-                            </div>
-                        </div>
-                        <div class="cred-footer">
-                            <p class="cred-hint">You can log into Swooped.co with these credentials to inspect your documents. When you are done, click Delete Account below to wipe the account.</p>
-                            <button type="button" class="btn-delete-swooped" id="btnDeleteSwooped">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                </svg>
-                                <span id="deleteBtnText">Delete Account on Swooped</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Live Document Preview Tabs -->
-                    <div class="preview-section">
-                        <div class="preview-tabs">
-                            <button type="button" class="tab-btn active" data-tab="cover-tab">Cover Letter Preview</button>
-                        </div>
-                        <div class="tab-content" id="cover-tab">
-                            <pre class="preview-text" id="coverLetterPreviewText"></pre>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Account Lifecycle Logs & History Section -->
-        <section class="card logs-card">
-            <div class="card-header">
-                <div>
-                    <h2>Account Lifecycle Logs & Audit History</h2>
-                    <p class="section-desc">Audit history of every disposable account created, used for generation, and wiped from Swooped.co</p>
-                </div>
-                <button type="button" class="btn-refresh-logs" id="btnRefreshLogs">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"></polyline>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                    </svg>
-                    Refresh Logs
-                </button>
-            </div>
-
-            <div class="table-responsive">
-                <table class="logs-table">
-                    <thead>
-                        <tr>
-                            <th>Created</th>
-                            <th>Temp-Mail & Password</th>
-                            <th>Company & Role</th>
-                            <th>Downloads (PDF & Word)</th>
-                            <th>Swooped Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logsTableBody">
-                        <tr>
-                            <td colspan="6" class="table-empty">No account generation logs recorded yet.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
-    <script src="/static/app.js"></script>
+<body class="workspace-body">
+  <header class="workspace-topbar">
+    <strong>ResumeFlow</strong>
+    <span>Fast local browser pipeline for Swooped</span>
+    <span class="top-actions"><a href="/api/logs" target="_blank">Logs</a></span>
+  </header>
+  <main class="fast-layout">
+    <section class="fast-card">
+      <h1>Generate a tailored application</h1>
+      <p class="muted">One run: temporary account, resume upload, job targeting, AI generation, and local downloads.</p>
+      <form id="pipelineForm">
+        <label class="fast-field">Base resume
+          <input id="resumeFile" type="file" accept=".pdf,.docx,.txt" required>
+        </label>
+        <div class="fast-row">
+          <label class="fast-field">Company
+            <input id="companyName" type="text" placeholder="Google" required>
+          </label>
+          <label class="fast-field">Role
+            <input id="jobTitle" type="text" placeholder="Senior Software Engineer" required>
+          </label>
+        </div>
+        <label class="fast-field">Job description
+          <textarea id="jobDescription" rows="9" placeholder="Paste the complete job description..." required></textarea>
+        </label>
+        <button class="send-button fast-submit" type="submit">Run full Swooped operation</button>
+      </form>
+    </section>
+    <section class="fast-card">
+      <div class="fast-heading"><h2>Live pipeline</h2><span id="runStatus">Ready</span></div>
+      <div class="browser-preview">
+        <div class="preview-toolbar"><span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span><span id="previewLabel">Real Swooped browser preview</span></div>
+        <img id="browserPreview" alt="Live screenshot of the Swooped browser" />
+        <p id="previewHint" class="muted">The real browser view will appear when the run starts.</p>
+      </div>
+      <div id="progress" class="progress-list"><p class="muted">Browser steps will appear here.</p></div>
+      <div id="result" class="result-box hidden"></div>
+    </section>
+  </main>
+  <script src="/static/app.js?v=20260910-browser-preview"></script>
 </body>
 </html>

@@ -3,12 +3,14 @@ import json
 import asyncio
 import subprocess
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from pydantic import BaseModel
 from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from swooped_engine import SwoopedEngine, DOWNLOADS_DIR
+from swooped_engine import SwoopedEngine, DOWNLOADS_DIR, PREVIEWS_DIR
 from account_logger import AccountLogger
+from browser_session import start_session, send_message
 
 app = FastAPI(title="ResumeFlow Mark 2 - Swooped.co Automation", version="2.0.0")
 
@@ -27,6 +29,38 @@ os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+
+class BrowserMessage(BaseModel):
+    session_id: str
+    message: str
+
+
+@app.post("/api/browser/start")
+async def start_browser_session(
+    message: str = Form(...),
+    resume_file: UploadFile | None = File(None),
+):
+    resume = None
+    if resume_file:
+        resume = type("ResumeUpload", (), {
+            "filename": resume_file.filename,
+            "content": await resume_file.read(),
+        })()
+    try:
+        return start_session(message, resume)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@app.post("/api/browser/message")
+async def continue_browser_session(payload: BrowserMessage):
+    if not payload.message.strip():
+        raise HTTPException(status_code=400, detail="Message cannot be empty")
+    try:
+        return send_message(payload.session_id, payload.message)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     index_path = os.path.join(STATIC_DIR, "index.html")
@@ -38,6 +72,13 @@ async def read_root():
 @app.get("/api/logs")
 async def get_logs():
     return AccountLogger.get_logs()
+
+@app.get("/api/browser-preview/{filename}")
+async def browser_preview(filename: str):
+    preview_path = os.path.join(PREVIEWS_DIR, os.path.basename(filename))
+    if not os.path.exists(preview_path):
+        raise HTTPException(status_code=404, detail="Browser preview not found")
+    return FileResponse(preview_path, media_type="image/png", headers={"Cache-Control": "no-store"})
 
 @app.post("/api/generate")
 async def generate_documents(
@@ -135,4 +176,4 @@ async def delete_swooped_account(account_id: str = Form(...)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
