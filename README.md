@@ -1,21 +1,37 @@
 # ResumeFlow Mark 2 (RFM2)
 
-ResumeFlow Mark 2 is a FastAPI application that drives the rendered
-[Swooped](https://swooped.co) website with a real Playwright Chromium browser.
-It does not call Swooped's private API. A run creates a disposable mailbox,
-registers a temporary Swooped account, uploads a base resume, submits the target
-company/role/job description, waits for Swooped to generate the optimized
-resume and cover letter, captures the real Swooped PDF downloads, and exports
-editable DOCX copies.
+> **Real-browser resume tailoring and document export**
 
-The dashboard also displays small screenshots captured from the same browser
-session so the user can see the workflow progressing instead of relying only
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.141%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Playwright](https://img.shields.io/badge/Browser-Playwright%20Chromium-2ead33?logo=playwright&logoColor=white)](https://playwright.dev/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?logo=python&logoColor=white)](https://www.python.org/)
+[![Output](https://img.shields.io/badge/Output-PDF%20%2B%20DOCX-e87922)](#output-layout)
+[![License](https://img.shields.io/badge/Status-Active-2563eb)](#project-status)
+
+**ResumeFlow Mark 2** is a FastAPI application that operates the rendered
+[Swooped](https://swooped.co/) website through a real Playwright Chromium
+browser. It does not call Swooped's private API.
+
+A run provisions a disposable mailbox, registers a temporary Swooped account,
+uploads a base resume, submits the target company, role, and job description,
+waits for Swooped to generate the optimized resume and cover letter, captures
+the actual Swooped PDF downloads, and exports editable DOCX copies.
+
+The dashboard includes compact screenshots from the same browser session, so
+users can see the operation progressing in real time rather than relying only
 on server log text.
 
 > **Important:** Swooped is a third-party website. Its UI, account rules,
 > anti-automation controls, generated document format, and download controls
 > can change without notice. Treat this project as an automation integration,
 > not as a guarantee that a third-party service will remain compatible.
+
+## Project status
+
+This is an active browser-automation integration. The default path is the
+fast local Playwright pipeline. Optional Browser Use Cloud session support is
+retained for interactive remote-browser experiments but is not required for
+the main workflow.
 
 ## Capabilities
 
