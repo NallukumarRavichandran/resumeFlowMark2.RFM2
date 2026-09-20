@@ -3,50 +3,300 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ResumeFlow — Fast Swooped Browser Pipeline</title>
-  <meta name="description" content="Generate tailored resumes and cover letters through a real Swooped browser workflow.">
-  <meta name="theme-color" content="#101112">
-  <link rel="stylesheet" href="/static/styles.css?v=20260910-minimal">
+  <title>ResumeFlow.ai — Operational Browser Automation Studio</title>
+  <meta name="description" content="Operational AI Infrastructure for Automated Swooped Resume & Cover Letter Synthesis.">
+  
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
+  
+  <!-- Typography: Inter & Instrument Serif -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=20260920-vesper">
 </head>
-<body class="workspace-body">
-  <header class="workspace-topbar">
-    <strong>ResumeFlow</strong>
-    <span>Fast local browser pipeline for Swooped</span>
-    <span class="top-actions"><a href="/api/logs" target="_blank">Logs</a></span>
-  </header>
-  <main class="fast-layout">
-    <section class="fast-card">
-      <h1>Generate a tailored application</h1>
-      <p class="muted">One run: temporary account, resume upload, job targeting, AI generation, and local downloads.</p>
-      <form id="pipelineForm">
-        <label class="fast-field">Base resume
-          <input id="resumeFile" type="file" accept=".pdf,.docx,.txt" required>
-        </label>
-        <div class="fast-row">
-          <label class="fast-field">Company
-            <input id="companyName" type="text" placeholder="Google" required>
-          </label>
-          <label class="fast-field">Role
-            <input id="jobTitle" type="text" placeholder="Senior Software Engineer" required>
-          </label>
+<body style="background:#000;color:#fff">
+  <!-- Layer 4: Grain Overlay -->
+  <div class="grain"></div>
+
+  <!-- Layer 2: Hero Atmospheric Backdrop -->
+  <div class="hero-photo">
+    <video autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260818_072341_50851634-bbc3-4c33-9acc-7647d4db44aa.mp4"></video>
+  </div>
+
+  <!-- 3-Column Topbar -->
+  <header class="studio-topbar">
+    <!-- Left: Brand Logo Suite -->
+    <a href="/" class="brand-suite">
+      <div class="brand-emblem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <g transform="rotate(-30 12 12)">
+            <circle cx="7.3" cy="3.2" r="1.45"/>
+            <rect x="5.5" y="4.7" width="3.6" height="14.6" rx="1.8"/>
+            <rect x="14.9" y="4.7" width="3.6" height="14.6" rx="1.8"/>
+            <circle cx="16.7" cy="20.8" r="1.45"/>
+          </g>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title">
+          <span>ResumeFlow</span><span style="font-weight: 400; color: var(--muted);">.ai</span>
+          <span class="brand-version">MK-II</span>
         </div>
-        <label class="fast-field">Job description
-          <textarea id="jobDescription" rows="9" placeholder="Paste the complete job description..." required></textarea>
-        </label>
-        <button class="send-button fast-submit" type="submit">Run full Swooped operation</button>
+        <span class="brand-subtitle">Operational Swooped Pipeline</span>
+      </div>
+    </a>
+
+    <!-- Center: Liquid-Metal Status Pill with Thinking Orb -->
+    <div class="topbar-center">
+      <div class="status-pill">
+        <canvas id="topbarOrb" width="20" height="20" style="width: 20px; height: 20px; vertical-align: middle;"></canvas>
+        <span id="systemStatusLabel">Autonomous Engine Ready</span>
+      </div>
+    </div>
+
+    <!-- Right: Header Actions -->
+    <div class="topbar-actions">
+      <a class="topbar-link" href="/api/logs" target="_blank" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        Audit Logs
+      </a>
+    </div>
+  </header>
+
+  <!-- Main 2-Column Studio Layout -->
+  <main class="studio-layout">
+    <!-- Left Panel: Application Curator -->
+    <section class="studio-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="label-caps">Step 01 — Target Ingestion</span>
+          <h2>Application Curator</h2>
+        </div>
+        <span class="status-badge" id="formStatusBadge">STANDBY</span>
+      </div>
+
+      <form id="pipelineForm" class="card-content">
+        <!-- Base Resume Dropzone -->
+        <div class="dropzone-container">
+          <label class="label-caps">Base Curriculum Vitae</label>
+          <div id="dropzone" class="dropzone">
+            <input id="resumeFile" type="file" accept=".pdf,.docx,.txt" required>
+            <div class="dropzone-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <div class="dropzone-prompt">Drop resume here, or <span>browse file</span></div>
+            <div class="dropzone-hint">Supports PDF, DOCX, or plain text (Max 15MB)</div>
+          </div>
+
+          <!-- File Selected Display -->
+          <div id="fileSelectedBadge" class="file-selected-badge">
+            <div class="file-info">
+              <span id="fileExtTag" class="file-tag">PDF</span>
+              <span id="fileNameDisplay" class="file-name">resume.pdf</span>
+            </div>
+            <button id="removeFileBtn" type="button" class="file-remove" title="Remove file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Target Company & Role -->
+        <div class="form-row">
+          <div class="field-group">
+            <label for="companyName" class="label-caps">Target Enterprise</label>
+            <input id="companyName" class="field-input" type="text" placeholder="e.g. Anthropic, Google, Stripe" required>
+          </div>
+          <div class="field-group">
+            <label for="jobTitle" class="label-caps">Target Role</label>
+            <input id="jobTitle" class="field-input" type="text" placeholder="e.g. Principal Systems Architect" required>
+          </div>
+        </div>
+
+        <!-- Job Description -->
+        <div class="field-group">
+          <label for="jobDescription">
+            <span class="label-caps">Job Specification & Requirements</span>
+            <span id="charCount" class="field-counter">0 chars</span>
+          </label>
+          <textarea id="jobDescription" class="field-textarea" rows="6" placeholder="Paste the full job requisition description including core competencies, required experience, and tech stack..." required></textarea>
+        </div>
+
+        <!-- Solid Liquid-Glass Action Button with Thinking Orb -->
+        <button id="submitBtn" class="cta-button" type="submit">
+          <canvas id="submitBtnOrb" width="20" height="20" style="display: none; width: 20px; height: 20px; vertical-align: middle; margin-right: 6px;"></canvas>
+          <svg class="cta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span id="submitBtnText">Launch Swooped Pipeline</span>
+        </button>
       </form>
     </section>
-    <section class="fast-card">
-      <div class="fast-heading"><h2>Live pipeline</h2><span id="runStatus">Ready</span></div>
-      <div class="browser-preview">
-        <div class="preview-toolbar"><span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span><span id="previewLabel">Real Swooped browser preview</span></div>
-        <img id="browserPreview" alt="Live screenshot of the Swooped browser" />
-        <p id="previewHint" class="muted">The real browser view will appear when the run starts.</p>
+
+    <!-- Right Panel: Automation Studio & Live Viewport -->
+    <section class="studio-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="label-caps">Step 02 — Automation Telemetry</span>
+          <h2>Live Browser Console</h2>
+        </div>
+        <span id="runStatus" class="status-badge" style="color: #ffffff;">IDLE</span>
       </div>
-      <div id="progress" class="progress-list"><p class="muted">Browser steps will appear here.</p></div>
-      <div id="result" class="result-box hidden"></div>
+
+      <!-- Segmented 5-Stage Stepper -->
+      <div class="stepper-bar">
+        <div id="step-node-1" class="step-node">
+          <span class="step-indicator">1</span>
+          <span class="step-label">Provision</span>
+        </div>
+        <div id="step-conn-1" class="step-connector"></div>
+        <div id="step-node-2" class="step-node">
+          <span class="step-indicator">2</span>
+          <span class="step-label">Ingest</span>
+        </div>
+        <div id="step-conn-2" class="step-connector"></div>
+        <div id="step-node-3" class="step-node">
+          <span class="step-indicator">3</span>
+          <span class="step-label">Target</span>
+        </div>
+        <div id="step-conn-3" class="step-connector"></div>
+        <div id="step-node-4" class="step-node">
+          <span class="step-indicator">4</span>
+          <span class="step-label">Synthesize</span>
+        </div>
+        <div id="step-conn-4" class="step-connector"></div>
+        <div id="step-node-5" class="step-node">
+          <span class="step-indicator">5</span>
+          <span class="step-label">Deliver</span>
+        </div>
+      </div>
+
+      <!-- Hardware Viewport for Live Browser Preview -->
+      <div class="browser-viewport">
+        <div class="browser-header">
+          <div class="browser-dots">
+            <span class="b-dot red"></span>
+            <span class="b-dot yellow"></span>
+            <span class="b-dot green"></span>
+          </div>
+          <div class="browser-url-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span id="previewLabel">swooped.co/app/builder • Virtual Chromium</span>
+          </div>
+          <div style="width: 32px;"></div>
+        </div>
+
+        <div class="browser-canvas">
+          <img id="browserPreview" alt="Swooped Live Automation Viewport">
+          <div id="viewportEmptyState" class="viewport-empty-state">
+            <canvas id="viewportOrb" width="64" height="64" style="width: 64px; height: 64px;"></canvas>
+            <p id="viewportOrbState" style="font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: -2px;">STATE: BREATHING</p>
+            <p id="viewportStatusText">Live browser feed will stream in real-time once the Swooped engine initiates navigation.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Terminal Feed -->
+      <div class="terminal-wrapper">
+        <div class="terminal-header">
+          <span class="label-caps">Telemetry Stream</span>
+          <span id="terminalStepTracker" class="label-caps" style="color: var(--muted);">Step 0 / 0</span>
+        </div>
+        <div id="terminalLogs" class="terminal-logs">
+          <div class="terminal-entry">
+            <span class="terminal-timestamp">[00:00:00]</span>
+            <span class="terminal-msg">Engine initialized. Ready to receive application parameters.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Executive Output Suite -->
+      <div id="resultsSuite" class="results-container">
+        <div class="results-header">
+          <div class="results-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span>Tailored Application Documents Ready</span>
+          </div>
+          <div id="generatedEmailBadge" class="results-email-badge">account@generated.domain</div>
+        </div>
+
+        <div class="documents-grid">
+          <!-- Resume Tile -->
+          <div class="doc-tile">
+            <div class="doc-tile-meta">
+              <div class="doc-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <div class="doc-name-group">
+                <span class="doc-name">Tailored Resume</span>
+                <span class="doc-tag">ATS-Optimized Executive Format</span>
+              </div>
+            </div>
+            <div class="doc-actions">
+              <a id="downloadResumePdf" class="doc-download-btn" href="#" download>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                PDF
+              </a>
+              <a id="downloadResumeDocx" class="doc-download-btn" href="#" download>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                DOCX
+              </a>
+            </div>
+          </div>
+
+          <!-- Cover Letter Tile -->
+          <div class="doc-tile">
+            <div class="doc-tile-meta">
+              <div class="doc-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                </svg>
+              </div>
+              <div class="doc-name-group">
+                <span class="doc-name">Tailored Cover Letter</span>
+                <span class="doc-tag">Targeted Narrative Pitch</span>
+              </div>
+            </div>
+            <div class="doc-actions">
+              <a id="downloadCoverPdf" class="doc-download-btn" href="#" download>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                PDF
+              </a>
+              <a id="downloadCoverDocx" class="doc-download-btn" href="#" download>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                DOCX
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
-  <script src="/static/app.js?v=20260910-minimal" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="/static/thinking-orbs-bundle.js"></script>
+  <script src="/static/click-effects.js"></script>
+  <script src="/static/app.js?v=20260920-vesper" defer></script>
 </body>
 </html>
