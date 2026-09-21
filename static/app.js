@@ -4,6 +4,51 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize GSAP Animations
+  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Stagger in the main layout cards
+    gsap.from('.studio-card', {
+      scrollTrigger: {
+        trigger: '.studio-layout',
+        start: 'top 85%',
+      },
+      y: 40,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: 'power3.out'
+    });
+
+    // Stagger in form rows
+    gsap.from('.form-row, .field-group, .dropzone-container', {
+      scrollTrigger: {
+        trigger: '#pipelineForm',
+        start: 'top 90%',
+      },
+      y: 20,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: 'power2.out'
+    });
+
+    // Stagger in doc tiles when they appear
+    gsap.utils.toArray('.doc-tile').forEach(tile => {
+      gsap.from(tile, {
+        scrollTrigger: {
+          trigger: tile,
+          start: 'top 95%',
+        },
+        x: -20,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power2.out'
+      });
+    });
+  }
+
   // DOM Element References
   const form = document.getElementById('pipelineForm');
   const submitBtn = document.getElementById('submitBtn');
@@ -498,5 +543,16 @@ document.addEventListener('DOMContentLoaded', () => {
         viewportOrbCanvas.style.height = `${currentOrbScale}px`;
       }
     });
+  }
+
+  // Initialize BorderBeam on the chatbox
+  if (typeof window.attachBorderBeam === 'function') {
+    // We add a tiny delay to ensure layout is ready
+    setTimeout(() => {
+      window.attachBorderBeam('jobDescription', { 
+        colorVariant: 'ocean',
+        strength: 0.8
+      });
+    }, 100);
   }
 });

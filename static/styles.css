@@ -312,6 +312,14 @@ body {
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #e5e5e5;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.status-badge:hover {
+  box-shadow: 0 0 14px rgba(186, 208, 255, 0.5), inset 0 0 6px rgba(186, 208, 255, 0.2);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  border-color: rgba(186, 208, 255, 0.5);
 }
 
 /* --------------------------------------------------------------------------
@@ -1065,4 +1073,25 @@ body {
   .documents-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Hover Glow Effects for Viewport Text
+   -------------------------------------------------------------------------- */
+#viewportOrbState {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.hover-glow-text {
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.hover-glow-text:hover {
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.6), 0 0 24px rgba(186, 208, 255, 0.4);
 }

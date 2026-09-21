@@ -220,14 +220,14 @@
           <img id="browserPreview" alt="Swooped Live Automation Viewport">
           <div id="viewportEmptyState" class="viewport-empty-state">
             <canvas id="viewportOrb" width="64" height="64" style="width: 64px; height: 64px;"></canvas>
-            <p id="viewportOrbState" style="font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: -2px;">STATE: BREATHING</p>
-            <p id="viewportStatusText">Live browser feed will stream in real-time once the Swooped engine initiates navigation.</p>
+            <p id="viewportOrbState" class="hover-glow-text" style="margin-top: -2px;">STATE: BREATHING</p>
+            <p id="viewportStatusText" class="hover-glow-text">Live browser feed will stream in real-time once the Swooped engine initiates navigation.</p>
           </div>
         </div>
       </div>
 
       <!-- Interactive Thinking Orb State Inspector (Libraries.dev) -->
-      <div class="orb-inspector-bar">
+      <div class="orb-inspector-bar" style="display: none;">
         <div class="orb-inspector-top">
           <div class="orb-inspector-label">
             <span class="orb-status-dot"></span>
@@ -338,7 +338,9 @@
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="/static/thinking-orbs-bundle.js"></script>
+  <script src="/static/border-beam-bundle.js"></script>
   <script src="/static/click-effects.js"></script>
   <script src="/static/app.js?v=20260920-vesper" defer></script>
 </body>
