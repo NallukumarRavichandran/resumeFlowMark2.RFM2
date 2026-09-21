@@ -100,6 +100,7 @@
           <!-- File Selected Display -->
           <div id="fileSelectedBadge" class="file-selected-badge">
             <div class="file-info">
+              <canvas id="fileScanOrb" width="20" height="20" style="width: 20px; height: 20px; vertical-align: middle;"></canvas>
               <span id="fileExtTag" class="file-tag">PDF</span>
               <span id="fileNameDisplay" class="file-name">resume.pdf</span>
             </div>
@@ -157,27 +158,42 @@
       <!-- Segmented 5-Stage Stepper -->
       <div class="stepper-bar">
         <div id="step-node-1" class="step-node">
-          <span class="step-indicator">1</span>
+          <span class="step-indicator" id="step-ind-1">
+            <span class="step-num">1</span>
+            <canvas id="step-orb-1" class="step-orb" width="20" height="20" style="display:none; width: 20px; height: 20px;"></canvas>
+          </span>
           <span class="step-label">Provision</span>
         </div>
         <div id="step-conn-1" class="step-connector"></div>
         <div id="step-node-2" class="step-node">
-          <span class="step-indicator">2</span>
+          <span class="step-indicator" id="step-ind-2">
+            <span class="step-num">2</span>
+            <canvas id="step-orb-2" class="step-orb" width="20" height="20" style="display:none; width: 20px; height: 20px;"></canvas>
+          </span>
           <span class="step-label">Ingest</span>
         </div>
         <div id="step-conn-2" class="step-connector"></div>
         <div id="step-node-3" class="step-node">
-          <span class="step-indicator">3</span>
+          <span class="step-indicator" id="step-ind-3">
+            <span class="step-num">3</span>
+            <canvas id="step-orb-3" class="step-orb" width="20" height="20" style="display:none; width: 20px; height: 20px;"></canvas>
+          </span>
           <span class="step-label">Target</span>
         </div>
         <div id="step-conn-3" class="step-connector"></div>
         <div id="step-node-4" class="step-node">
-          <span class="step-indicator">4</span>
+          <span class="step-indicator" id="step-ind-4">
+            <span class="step-num">4</span>
+            <canvas id="step-orb-4" class="step-orb" width="20" height="20" style="display:none; width: 20px; height: 20px;"></canvas>
+          </span>
           <span class="step-label">Synthesize</span>
         </div>
         <div id="step-conn-4" class="step-connector"></div>
         <div id="step-node-5" class="step-node">
-          <span class="step-indicator">5</span>
+          <span class="step-indicator" id="step-ind-5">
+            <span class="step-num">5</span>
+            <canvas id="step-orb-5" class="step-orb" width="20" height="20" style="display:none; width: 20px; height: 20px;"></canvas>
+          </span>
           <span class="step-label">Deliver</span>
         </div>
       </div>
@@ -207,6 +223,33 @@
             <p id="viewportOrbState" style="font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: -2px;">STATE: BREATHING</p>
             <p id="viewportStatusText">Live browser feed will stream in real-time once the Swooped engine initiates navigation.</p>
           </div>
+        </div>
+      </div>
+
+      <!-- Interactive Thinking Orb State Inspector (Libraries.dev) -->
+      <div class="orb-inspector-bar">
+        <div class="orb-inspector-top">
+          <div class="orb-inspector-label">
+            <span class="orb-status-dot"></span>
+            <span class="label-caps" style="color: #ffffff; font-weight: 600;">Thinking Orb States</span>
+            <span class="orb-source-tag">Libraries.dev</span>
+          </div>
+          <div class="orb-controls-group">
+            <button type="button" id="toggleOrbThemeBtn" class="orb-tiny-btn" title="Toggle Light / Dark tuning">Theme: Dark</button>
+            <button type="button" id="toggleOrbSizeBtn" class="orb-tiny-btn" title="Toggle 64px / 20px scale">Scale: 64px</button>
+            <a href="https://libraries.dev/orbs.html" target="_blank" rel="noopener noreferrer" class="orb-doc-pill">Docs ↗</a>
+          </div>
+        </div>
+        <div class="orb-states-chips">
+          <button type="button" class="orb-chip" data-state="working">working</button>
+          <button type="button" class="orb-chip" data-state="searching">searching</button>
+          <button type="button" class="orb-chip" data-state="solving">solving</button>
+          <button type="button" class="orb-chip" data-state="listening">listening</button>
+          <button type="button" class="orb-chip" data-state="connecting">connecting</button>
+          <button type="button" class="orb-chip" data-state="weaving">weaving</button>
+          <button type="button" class="orb-chip" data-state="composing">composing</button>
+          <button type="button" class="orb-chip active" data-state="breathing">breathing</button>
+          <button type="button" class="orb-chip" data-state="shaping">shaping</button>
         </div>
       </div>
 

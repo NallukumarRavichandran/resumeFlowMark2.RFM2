@@ -46,10 +46,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitBtnOrbCanvas = document.getElementById('submitBtnOrb');
   const viewportOrbCanvas = document.getElementById('viewportOrb');
   const viewportOrbState = document.getElementById('viewportOrbState');
+  const fileScanOrbCanvas = document.getElementById('fileScanOrb');
 
   let topbarOrb = null;
   let submitBtnOrb = null;
   let viewportOrb = null;
+  let fileScanOrb = null;
+  const stepOrbs = {};
+
+  const stepOrbStates = {
+    1: 'connecting',
+    2: 'searching',
+    3: 'solving',
+    4: 'weaving',
+    5: 'composing'
+  };
 
   if (typeof window.createThinkingOrb === 'function') {
     if (topbarOrbCanvas) {
@@ -71,12 +82,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (viewportOrbCanvas) {
       viewportOrb = window.createThinkingOrb(viewportOrbCanvas, {
-        state: 'searching',
+        state: 'breathing',
         size: 64,
         dark: true,
         speed: 1
       });
     }
+    if (fileScanOrbCanvas) {
+      fileScanOrb = window.createThinkingOrb(fileScanOrbCanvas, {
+        state: 'shaping',
+        size: 20,
+        dark: true,
+        speed: 1,
+        paused: true
+      });
+    }
+    [1, 2, 3, 4, 5].forEach(stepNum => {
+      const stepCanvas = document.getElementById(`step-orb-${stepNum}`);
+      if (stepCanvas) {
+        stepOrbs[stepNum] = window.createThinkingOrb(stepCanvas, {
+          state: stepOrbStates[stepNum],
+          size: 20,
+          dark: false,
+          speed: 1,
+          paused: true
+        });
+      }
+    });
   }
 
   // Stepper Elements
@@ -105,12 +137,19 @@ document.addEventListener('DOMContentLoaded', () => {
     fileNameDisplay.textContent = `${name} (${(file.size / 1024).toFixed(0)} KB)`;
     dropzone.style.display = 'none';
     fileSelectedBadge.classList.add('active');
+    if (fileScanOrb) {
+      fileScanOrb.resume();
+      fileScanOrb.setState('shaping');
+    }
   }
 
   function clearSelectedFile() {
     resumeFileInput.value = '';
     fileSelectedBadge.classList.remove('active');
     dropzone.style.display = 'flex';
+    if (fileScanOrb) {
+      fileScanOrb.pause();
+    }
   }
 
   resumeFileInput.addEventListener('change', (e) => {
@@ -185,11 +224,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // stepIndex: 1 to 5
     stepNodes.forEach((node, idx) => {
       const stepNum = idx + 1;
+      const stepOrb = stepOrbs[stepNum];
+      const stepCanvas = document.getElementById(`step-orb-${stepNum}`);
+      const stepNumEl = node.querySelector('.step-num');
+
       node.classList.remove('active', 'completed');
       if (stepNum < stepIndex) {
         node.classList.add('completed');
+        if (stepOrb) stepOrb.pause();
+        if (stepCanvas) stepCanvas.style.display = 'none';
+        if (stepNumEl) {
+          stepNumEl.style.display = 'inline';
+          stepNumEl.textContent = '✓';
+        }
       } else if (stepNum === stepIndex) {
         node.classList.add('active');
+        if (stepOrb) {
+          stepOrb.resume();
+        }
+        if (stepCanvas) stepCanvas.style.display = 'block';
+        if (stepNumEl) stepNumEl.style.display = 'none';
+      } else {
+        if (stepOrb) stepOrb.pause();
+        if (stepCanvas) stepCanvas.style.display = 'none';
+        if (stepNumEl) {
+          stepNumEl.style.display = 'inline';
+          stepNumEl.textContent = String(stepNum);
+        }
       }
     });
 
@@ -397,4 +458,45 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // Thinking Orb Interactive Inspector
+  const orbChips = document.querySelectorAll('.orb-chip');
+  orbChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const state = chip.dataset.state;
+      orbChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+
+      if (viewportOrb) {
+        viewportOrb.setState(state);
+      }
+      if (viewportOrbState) {
+        viewportOrbState.textContent = `STATE: ${state.toUpperCase()}`;
+      }
+    });
+  });
+
+  const toggleOrbThemeBtn = document.getElementById('toggleOrbThemeBtn');
+  let isDarkTheme = true;
+  if (toggleOrbThemeBtn) {
+    toggleOrbThemeBtn.addEventListener('click', () => {
+      isDarkTheme = !isDarkTheme;
+      toggleOrbThemeBtn.textContent = `Theme: ${isDarkTheme ? 'Dark' : 'Light'}`;
+      if (viewportOrb) viewportOrb.setDark(isDarkTheme);
+    });
+  }
+
+  const toggleOrbSizeBtn = document.getElementById('toggleOrbSizeBtn');
+  let currentOrbScale = 64;
+  if (toggleOrbSizeBtn) {
+    toggleOrbSizeBtn.addEventListener('click', () => {
+      currentOrbScale = currentOrbScale === 64 ? 20 : 64;
+      toggleOrbSizeBtn.textContent = `Scale: ${currentOrbScale}px`;
+      if (viewportOrb) {
+        viewportOrb.setSize(currentOrbScale);
+        viewportOrbCanvas.style.width = `${currentOrbScale}px`;
+        viewportOrbCanvas.style.height = `${currentOrbScale}px`;
+      }
+    });
+  }
 });

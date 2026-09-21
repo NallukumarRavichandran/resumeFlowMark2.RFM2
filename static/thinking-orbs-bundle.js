@@ -547,16 +547,16 @@ function Lt(n, s) {
   return tt.set(t, M), M;
 }
 const __exports = {
-  Ct as MODE_DRAWS,
-  vt as MODE_FRAMES,
-  Ot as STATE_TO_MODE,
-  L as finalizeFrame,
-  _ as makeProj,
-  rt as paint,
-  ht as paintFrame,
-  it as paintLines,
-  $ as radiusScale,
-  Lt as resolvePreset
+  MODE_DRAWS: Ct,
+  MODE_FRAMES: vt,
+  STATE_TO_MODE: Ot,
+  finalizeFrame: L,
+  makeProj: _,
+  paint: rt,
+  paintFrame: ht,
+  paintLines: it,
+  radiusScale: $,
+  resolvePreset: Lt
 };
 
 

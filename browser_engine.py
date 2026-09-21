@@ -124,8 +124,13 @@ class BrowserSwoopedEngine:
                 "'python -m playwright install chromium'."
             ) from exc
 
-        with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(headless=self._headless())
+            try:
+                browser = playwright.chromium.launch(headless=self._headless())
+            except Exception:
+                try:
+                    browser = playwright.chromium.launch(headless=self._headless(), channel="chrome")
+                except Exception:
+                    browser = playwright.chromium.launch(headless=self._headless(), channel="msedge")
             context = browser.new_context(accept_downloads=True)
             page = context.new_page()
             try:
