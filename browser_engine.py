@@ -472,7 +472,7 @@ class BrowserSwoopedEngine:
 
     @classmethod
     def delete_account_by_id(cls, run_id):
-        logs = AccountLogger.get_logs()
+        logs = AccountLogger.get_logs(redact=False)
         target = next((item for item in logs if item.get("id") == run_id), None)
         if not target or not target.get("email") or not target.get("password"):
             return {"success": False, "error": "Account credentials were not found"}

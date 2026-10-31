@@ -144,6 +144,41 @@ export BROWSER_HEADLESS=false
 In a headless Codespace, use the dashboard screenshots instead. Setting
 `BROWSER_HEADLESS=false` without a display server will fail.
 
+### Dashboard access control
+
+Set a shared secret to require auth on the dashboard and every API route:
+
+```bash
+export DASHBOARD_TOKEN="a-long-random-string"
+```
+
+When unset (the default) the app runs open for local development. When set:
+
+- `GET /` serves a login form until the token is submitted or supplied.
+- `GET /?token=...` bootstraps an HttpOnly session cookie.
+- API routes accept either the cookie or `Authorization: Bearer <token>`.
+- `/login` compares tokens in constant time.
+
+### CORS origins
+
+Cross-site API access defaults to localhost only:
+
+```bash
+export ALLOWED_ORIGINS="http://127.0.0.1:8000,https://my-dashboard.example"
+```
+
+A `*` wildcard is accepted but then credentialed requests are disabled, as
+required by the CORS specification.
+
+### Opening the downloads folder
+
+`POST /api/open-folder` shells out to `xdg-open`/`os.startfile` and is
+disabled by default on servers. Enable it only on a desktop install:
+
+```bash
+export ENABLE_OPEN_FOLDER=true
+```
+
 ### Optional Browser Use Cloud
 
 The repository retains an optional Browser Use Cloud implementation in
@@ -283,8 +318,9 @@ Errors are emitted as:
 
 ### `GET /api/download/{folder_name}/{filename}`
 
-Serves a generated PDF or DOCX file. The route checks that the requested file
-exists under the downloads directory and returns 404 otherwise.
+Serves a generated PDF or DOCX file. Both path segments must be plain
+filenames; separators and `..` are rejected with HTTP 400, and the resolved
+path must stay inside the downloads directory. Missing files return 404.
 
 ### `GET /api/browser-preview/{filename}`
 
@@ -294,8 +330,12 @@ directory.
 
 ### `GET /api/logs`
 
-Returns account lifecycle records stored by `AccountLogger`. These records can
-contain temporary credentials; protect this endpoint in any public deployment.
+Returns account lifecycle records stored by `AccountLogger`. Sensitive
+fields such as `password` are replaced with `<redacted>` before the records
+leave the server; the on-disk log keeps real values for the account-deletion
+flow. When `DASHBOARD_TOKEN` is set this route requires auth. Do not publish
+this endpoint without authentication; it still contains temporary email
+addresses.
 
 ### `POST /api/delete-account`
 
@@ -307,6 +347,18 @@ account_id=<run_id>
 
 The engine logs into Swooped through Playwright and attempts the rendered
 settings-page deletion flow.
+
+### `POST /api/open-folder`
+
+Form field:
+
+```text
+folder_name=<folder under downloads/>
+```
+
+Disabled by default; returns HTTP 403 unless `ENABLE_OPEN_FOLDER=true` is
+set. When enabled it shells out to the OS file manager, so use it only on
+desktop installs.
 
 ### Optional interactive Browser Use routes
 
@@ -439,8 +491,14 @@ preview URLs.
 ## Security and privacy
 
 - Never commit `BROWSER_USE_API_KEY`.
-- Do not publish `/api/logs` without authentication; it can contain temporary
-  email addresses and passwords.
+- Set `DASHBOARD_TOKEN` on any shared or public deployment; it gates the
+  dashboard and every API route behind a shared secret.
+- `/api/logs` redacts password fields, but records still contain temporary
+  email addresses; do not publish the endpoint without authentication.
+- Download and preview routes reject path traversal and resolve files only
+  inside their base directories.
+- Cross-site API access is limited to `ALLOWED_ORIGINS` (localhost by
+  default).
 - Treat preview URLs, temporary credentials, and Swooped session URLs as
   sensitive.
 - Do not use this application to bypass account protections, rate limits, or
