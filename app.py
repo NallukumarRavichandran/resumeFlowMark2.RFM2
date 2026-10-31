@@ -2,6 +2,7 @@ import os
 import json
 import secrets
 import asyncio
+import threading
 import subprocess
 from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException
 from pydantic import BaseModel
@@ -9,7 +10,7 @@ from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse, Red
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from swooped_engine import SwoopedEngine, DOWNLOADS_DIR, PREVIEWS_DIR
+from swooped_engine import SwoopedEngine, PipelineCancelled, DOWNLOADS_DIR, PREVIEWS_DIR
 from account_logger import AccountLogger
 from browser_session import start_session, send_message
 
@@ -231,32 +232,73 @@ async def browser_preview(filename: str):
         raise HTTPException(status_code=404, detail="Browser preview not found")
     return FileResponse(preview_path, media_type="image/png", headers={"Cache-Control": "no-store"})
 
+ALLOWED_RESUME_EXTENSIONS = {".pdf", ".docx", ".txt"}
+MAX_RESUME_BYTES = 15 * 1024 * 1024
+MAX_MULTIPART_BYTES = MAX_RESUME_BYTES + 1024 * 1024
+
+# Exactly one pipeline may run at a time; the SSE stream holds the lock for
+# its lifetime (or until the worker finishes if the client disconnects).
+PIPELINE_LOCK = threading.Lock()
+ACTIVE_RUN_CANCEL = {"event": None}
+
+
 @app.post("/api/generate")
 async def generate_documents(
+    request: Request,
     resume_file: UploadFile = File(...),
     company_name: str = Form(...),
     job_title: str = Form(...),
     job_description: str = Form(...)
 ):
+    content_length = request.headers.get("content-length", "")
+    if content_length.isdigit() and int(content_length) > MAX_MULTIPART_BYTES:
+        raise HTTPException(status_code=413, detail="Resume upload exceeds the 15MB limit.")
+
     resume_bytes = await resume_file.read()
     filename = resume_file.filename or "resume.pdf"
+    extension = os.path.splitext(filename)[1].lower()
+    if extension not in ALLOWED_RESUME_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported resume type '{extension or 'unknown'}'. Use PDF, DOCX, or TXT.",
+        )
+    if not resume_bytes:
+        raise HTTPException(status_code=400, detail="Resume file is empty.")
+    if len(resume_bytes) > MAX_RESUME_BYTES:
+        raise HTTPException(status_code=413, detail="Resume upload exceeds the 15MB limit.")
+    if not company_name.strip() or not job_title.strip() or not job_description.strip():
+        raise HTTPException(status_code=400, detail="Company name, target role, and job description are required.")
 
-    async def event_generator():
-        queue = asyncio.Queue()
+    if not PIPELINE_LOCK.acquire(blocking=False):
+        raise HTTPException(
+            status_code=409,
+            detail="A pipeline run is already active. Wait for it to finish or cancel it first.",
+        )
 
+    released = False
+
+    def release_once():
+        nonlocal released
+        if not released:
+            released = True
+            ACTIVE_RUN_CANCEL["event"] = None
+            PIPELINE_LOCK.release()
+
+    loop = asyncio.get_running_loop()
+    queue: asyncio.Queue = asyncio.Queue()
+    cancel_event = threading.Event()
+    ACTIVE_RUN_CANCEL["event"] = cancel_event
+
+    try:
         def progress_callback(step, total, message, data=None):
-            event = {
-                "step": step,
-                "total": total,
-                "message": message,
-                "data": data
-            }
-            queue.put_nowait(event)
+            loop.call_soon_threadsafe(
+                queue.put_nowait,
+                {"step": step, "total": total, "message": message, "data": data},
+            )
 
-        engine = SwoopedEngine(progress_callback=progress_callback)
+        engine = SwoopedEngine(progress_callback=progress_callback, cancel_event=cancel_event)
 
         # Run pipeline in a worker thread so asyncio remains non-blocking
-        loop = asyncio.get_event_loop()
         task = loop.run_in_executor(
             None,
             engine.execute_pipeline,
@@ -264,40 +306,87 @@ async def generate_documents(
             filename,
             company_name,
             job_title,
-            job_description
+            job_description,
         )
 
-        while True:
-            # Check if there are queued events
-            while not queue.empty():
-                evt = queue.get_nowait()
-                yield f"data: {json.dumps(evt)}\n\n"
+        RELEASED = object()
 
+        def _finish(fut):
+            try:
+                res = fut.result()
+                if isinstance(res, dict):
+                    # Never ship account credentials to the browser.
+                    res = {k: v for k, v in res.items() if k != "password"}
+                queue.put_nowait({
+                    "step": 6,
+                    "total": 6,
+                    "done": True,
+                    "message": "Completed! Documents generated & credentials ready.",
+                    "result": res,
+                })
+            except Exception as exc:
+                queue.put_nowait({
+                    "error": True,
+                    "cancelled": isinstance(exc, PipelineCancelled),
+                    "message": str(exc),
+                })
+            finally:
+                queue.put_nowait(RELEASED)
+                # The lock guards the worker, not the stream: release as soon
+                # as the worker stops, even if the client never read a byte.
+                release_once()
+
+        def _on_done(fut):
+            # run_in_executor callbacks fire on the worker thread; hop back.
+            try:
+                loop.call_soon_threadsafe(_finish, fut)
+            except RuntimeError:
+                pass  # event loop already closed
+
+        task.add_done_callback(_on_done)
+    except BaseException:
+        release_once()
+        raise
+
+    async def _release_when_finished():
+        try:
+            await asyncio.shield(task)
+        except BaseException:
+            pass
+        finally:
+            release_once()
+
+    async def event_generator():
+        try:
+            # Event-driven: every queue.get() wakes the moment a progress
+            # callback or the worker completion fires (no polling).
+            while True:
+                payload = await queue.get()
+                if payload is RELEASED:
+                    break
+                yield f"data: {json.dumps(payload)}\n\n"
+        finally:
             if task.done():
-                try:
-                    res = task.result()
-                    if isinstance(res, dict):
-                        # Never ship account credentials to the browser.
-                        res = {k: v for k, v in res.items() if k != "password"}
-                    final_evt = {
-                        "step": 6,
-                        "total": 6,
-                        "done": True,
-                        "message": "Completed! Documents generated & credentials ready.",
-                        "result": res
-                    }
-                    yield f"data: {json.dumps(final_evt)}\n\n"
-                except Exception as e:
-                    err_evt = {
-                        "error": True,
-                        "message": str(e)
-                    }
-                    yield f"data: {json.dumps(err_evt)}\n\n"
-                break
-
-            await asyncio.sleep(0.5)
+                release_once()
+            else:
+                # Client disconnected: let the run finish on disk and release
+                # the single-run lock only when the worker actually stops.
+                asyncio.ensure_future(_release_when_finished())
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@app.post("/api/cancel")
+async def cancel_active_run():
+    event = ACTIVE_RUN_CANCEL.get("event")
+    if event is None:
+        raise HTTPException(status_code=404, detail="No active pipeline run to cancel.")
+    event.set()
+    return {
+        "success": True,
+        "message": "Cancellation requested. The run stops at the next checkpoint.",
+    }
+
 
 @app.get("/api/download/{folder_name}/{filename}")
 async def download_file(folder_name: str, filename: str):

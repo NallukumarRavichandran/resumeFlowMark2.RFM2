@@ -276,6 +276,17 @@ Multipart form fields:
 | `job_title` | yes | Target role |
 | `job_description` | yes | Full job description |
 
+Validation is enforced before a run starts:
+
+- unsupported resume extension → HTTP 400
+- empty resume or missing form fields → HTTP 400
+- resume larger than 15MB → HTTP 413
+- a run is already active → HTTP 409 (single-run lock)
+
+Exactly one pipeline runs at a time. The lock is held for the lifetime of
+the SSE stream; if the client disconnects, the run continues to completion
+on disk and the lock is released when the worker stops.
+
 The response is `text/event-stream`. Each event is JSON after the `data: `
 prefix:
 
@@ -312,9 +323,18 @@ Errors are emitted as:
 ```json
 {
   "error": true,
+  "cancelled": false,
   "message": "Human-readable failure reason"
 }
 ```
+
+`cancelled` is `true` when the run stopped because of `POST /api/cancel`.
+
+### `POST /api/cancel`
+
+Stops the active run at its next stage checkpoint and closes its browser
+context. Returns HTTP 404 when no run is active. The SSE stream for that
+run receives an `error` event with `"cancelled": true`.
 
 ### `GET /api/download/{folder_name}/{filename}`
 
