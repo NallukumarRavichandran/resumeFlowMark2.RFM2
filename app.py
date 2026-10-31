@@ -225,7 +225,7 @@ async def get_logs():
     return AccountLogger.get_logs(redact=True)
 
 
-@app.get("/api/browser-preview/{filename}")
+@app.api_route("/api/browser-preview/{filename}", methods=["GET", "HEAD"])
 async def browser_preview(filename: str):
     preview_path = _safe_file_path(PREVIEWS_DIR, filename)
     if not os.path.exists(preview_path):
@@ -388,7 +388,7 @@ async def cancel_active_run():
     }
 
 
-@app.get("/api/download/{folder_name}/{filename}")
+@app.api_route("/api/download/{folder_name}/{filename}", methods=["GET", "HEAD"])
 async def download_file(folder_name: str, filename: str):
     file_path = _safe_file_path(DOWNLOADS_DIR, folder_name, filename)
     if not os.path.exists(file_path):
