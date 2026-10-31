@@ -22,11 +22,20 @@ class BrowserAutomationError(RuntimeError):
     """Raised when the Swooped browser flow cannot find a required UI control."""
 
 
+class PipelineCancelled(BrowserAutomationError):
+    """Raised at stage boundaries when the user requests cancellation."""
+
+
 class BrowserSwoopedEngine:
     """Runs the Swooped workflow through its rendered website using Playwright."""
 
-    def __init__(self, progress_callback=None):
+    def __init__(self, progress_callback=None, cancel_event=None):
         self.progress_callback = progress_callback or (lambda step, total, msg, data=None: None)
+        self.cancel_event = cancel_event
+
+    def _check_cancelled(self):
+        if self.cancel_event is not None and self.cancel_event.is_set():
+            raise PipelineCancelled("Run cancelled by user")
 
     def log_progress(self, step, total, message, extra=None):
         print(f"[{step}/{total}] {message}")
@@ -143,6 +152,7 @@ class BrowserSwoopedEngine:
     def _register(self, page, email, password):
         last_state = ""
         for attempt in range(3):
+            self._check_cancelled()
             page.goto(f"{SWOOPED_URL}/auth/register", wait_until="domcontentloaded")
             page.wait_for_timeout(2500)
             self._dismiss_cookies(page)
@@ -207,6 +217,7 @@ class BrowserSwoopedEngine:
                 temp_file.write(resume_bytes)
         try:
             for upload_url in (f"{SWOOPED_URL}/app", f"{SWOOPED_URL}/app/resumes"):
+                self._check_cancelled()
                 page.goto(upload_url, wait_until="domcontentloaded")
                 page.wait_for_timeout(5000)
                 file_input = page.locator('input[type="file"]')
@@ -229,6 +240,7 @@ class BrowserSwoopedEngine:
             os.unlink(temp_path)
 
     def _create_job_optimized_resume(self, page, company_name, job_title, job_description):
+        self._check_cancelled()
         if "setup_profile_step" in page.url:
             for label in ["continue", "next", "save and continue", "complete setup", "skip"]:
                 control = page.get_by_role("button", name=re.compile(label, re.I))
@@ -273,6 +285,7 @@ class BrowserSwoopedEngine:
         page.wait_for_timeout(3000)
 
     def _generate_documents(self, page, company_name, job_title, download_dir):
+        self._check_cancelled()
         page.wait_for_timeout(8000)
         for label in ["generate cover letter", "cover letter"]:
             dialog = page.get_by_role("dialog")
@@ -293,6 +306,7 @@ class BrowserSwoopedEngine:
                 break
         if "1 task in progress" in page.locator("body").inner_text():
             for _ in range(12):
+                self._check_cancelled()
                 page.wait_for_timeout(5000)
                 if "task in progress" not in page.locator("body").inner_text().lower():
                     break
@@ -313,6 +327,7 @@ class BrowserSwoopedEngine:
         downloaded = []
         controls = page.locator("a, button")
         for index in range(controls.count()):
+            self._check_cancelled()
             control = controls.nth(index)
             if not control.is_visible():
                 continue
@@ -363,6 +378,7 @@ class BrowserSwoopedEngine:
 
         email_account = None
         try:
+            self._check_cancelled()
             self.log_progress(1, 6, "Generating disposable Temp-Mail account...")
             for attempt in range(3):
                 try:
@@ -375,6 +391,7 @@ class BrowserSwoopedEngine:
             email = email_account["email"]
             password = email_account["password"]
             AccountLogger.add_or_update_log(run_id, email=email, password=password, status="Temp-Mail Created")
+            self._check_cancelled()
 
             with self._browser() as page:
                 self.log_progress(2, 6, f"Registering account on Swooped.co ({email})...")
@@ -382,16 +399,19 @@ class BrowserSwoopedEngine:
                 preview_url = self._capture_preview(page, run_id, "registered")
                 self.progress_callback(2, 6, "Swooped account ready", {"preview_url": preview_url})
                 AccountLogger.add_or_update_log(run_id, status="Swooped Registered")
+                self._check_cancelled()
 
                 self.log_progress(3, 6, f"Uploading base resume ({filename}) in the Swooped browser...")
                 self._upload_resume(page, resume_bytes, filename)
                 preview_url = self._capture_preview(page, run_id, "uploaded")
                 self.progress_callback(3, 6, "Resume uploaded in Swooped", {"preview_url": preview_url})
+                self._check_cancelled()
 
                 self.log_progress(4, 6, "Creating the job target and generating documents in Swooped...")
                 self._create_job_optimized_resume(page, company_name, job_title, job_description)
                 preview_url = self._capture_preview(page, run_id, "generating")
                 self.progress_callback(4, 6, "Swooped is generating the application", {"preview_url": preview_url})
+                self._check_cancelled()
                 page_text, downloaded_files = self._generate_documents(
                     page, company_name, job_title, target_folder
                 )
@@ -399,6 +419,7 @@ class BrowserSwoopedEngine:
                 self.progress_callback(5, 6, "Swooped documents are ready", {"preview_url": preview_url})
 
             cover_letter_text = self._extract_cover_letter(page_text, company_name, job_title)
+            self._check_cancelled()
 
             self.log_progress(5, 6, "Waiting for Swooped browser generation to complete...")
             time.sleep(1)
@@ -440,6 +461,10 @@ class BrowserSwoopedEngine:
             }
             self.log_progress(6, 6, "Generation completed through the real Swooped browser.", result)
             return {"success": True, **result}
+        except PipelineCancelled:
+            AccountLogger.add_or_update_log(run_id, status="Cancelled by user")
+            self.log_progress(0, 0, "Run cancelled by user")
+            raise
         except Exception as exc:
             AccountLogger.add_or_update_log(run_id, status=f"Failed: {exc}")
             self.log_progress(0, 0, f"Error: {exc}")
