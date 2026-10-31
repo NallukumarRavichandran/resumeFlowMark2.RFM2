@@ -135,13 +135,18 @@
         </div>
 
         <!-- Solid Liquid-Glass Action Button with Thinking Orb -->
-        <button id="submitBtn" class="cta-button" type="submit">
-          <canvas id="submitBtnOrb" width="20" height="20" style="display: none; width: 20px; height: 20px; vertical-align: middle; margin-right: 6px;"></canvas>
-          <svg class="cta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-          <span id="submitBtnText">Launch Swooped Pipeline</span>
-        </button>
+        <div class="cta-row">
+          <button id="submitBtn" class="cta-button" type="submit">
+            <canvas id="submitBtnOrb" width="20" height="20" style="display: none; width: 20px; height: 20px; vertical-align: middle; margin-right: 6px;"></canvas>
+            <svg class="cta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span id="submitBtnText">Launch Swooped Pipeline</span>
+          </button>
+          <button id="cancelRunBtn" class="cancel-button" type="button" hidden>
+            Cancel
+          </button>
+        </div>
       </form>
     </section>
 

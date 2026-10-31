@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileExtTag = document.getElementById('fileExtTag');
   const fileNameDisplay = document.getElementById('fileNameDisplay');
   const removeFileBtn = document.getElementById('removeFileBtn');
+  const cancelRunBtn = document.getElementById('cancelRunBtn');
 
   // Input Fields & Character Counter
   const companyInput = document.getElementById('companyName');
@@ -174,11 +175,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   // File Dropzone Handling
   // --------------------------------------------------------------------------
+  const ALLOWED_EXTENSIONS = ['pdf', 'docx', 'txt'];
+  const MAX_RESUME_MB = 15;
+
   function handleFileSelected(file) {
-    if (!file) return;
+    if (!file) return false;
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      logTerminal(`Error: unsupported file type ".${ext || 'none'}". Use PDF, DOCX, or TXT.`, 'error');
+      return false;
+    }
+    if (file.size > MAX_RESUME_MB * 1024 * 1024) {
+      logTerminal(
+        `Error: ${file.name} is ${(file.size / 1048576).toFixed(1)} MB — the limit is ${MAX_RESUME_MB} MB.`,
+        'error'
+      );
+      return false;
+    }
     const name = file.name;
-    const ext = name.split('.').pop().toUpperCase();
-    fileExtTag.textContent = ext;
+    fileExtTag.textContent = ext.toUpperCase();
     fileNameDisplay.textContent = `${name} (${(file.size / 1024).toFixed(0)} KB)`;
     dropzone.style.display = 'none';
     fileSelectedBadge.classList.add('active');
@@ -186,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fileScanOrb.resume();
       fileScanOrb.setState('shaping');
     }
+    return true;
   }
 
   function clearSelectedFile() {
@@ -199,7 +215,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   resumeFileInput.addEventListener('change', (e) => {
     if (e.target.files && e.target.files[0]) {
-      handleFileSelected(e.target.files[0]);
+      if (!handleFileSelected(e.target.files[0])) {
+        resumeFileInput.value = '';
+      }
     }
   });
 
@@ -228,8 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const dt = e.dataTransfer;
     const files = dt.files;
     if (files && files.length > 0) {
-      resumeFileInput.files = files;
-      handleFileSelected(files[0]);
+      if (handleFileSelected(files[0])) {
+        resumeFileInput.files = files;
+      } else {
+        resumeFileInput.value = '';
+      }
     }
   });
 
@@ -371,6 +392,8 @@ document.addEventListener('DOMContentLoaded', () => {
     formStatusBadge.textContent = 'RUNNING';
     systemStatusLabel.textContent = 'Pipeline Running';
     runStatus.textContent = 'RUNNING';
+    cancelRunBtn.hidden = false;
+    cancelRunBtn.disabled = false;
 
     // Thinking Orb activations
     if (submitBtnOrb) {
@@ -398,7 +421,16 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Pipeline API request failed with HTTP status ${response.status}`);
+        let detail = `Pipeline API request failed with HTTP status ${response.status}`;
+        try {
+          const body = await response.clone().json();
+          if (body && body.detail) detail = body.detail;
+        } catch (_) {
+          /* non-JSON error body */
+        }
+        const httpErr = new Error(detail);
+        if (response.status === 409) httpErr.busy = true;
+        throw httpErr;
       }
 
       const reader = response.body.getReader();
@@ -421,7 +453,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const payload = JSON.parse(jsonStr);
 
           if (payload.error) {
-            throw new Error(payload.message || 'An unexpected error occurred in browser automation');
+            const streamErr = new Error(payload.message || 'An unexpected error occurred in browser automation');
+            streamErr.cancelled = !!payload.cancelled;
+            throw streamErr;
           }
 
           // Update Terminal Log
@@ -461,10 +495,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const folder = encodeURIComponent(res.folder_name);
             const prefix = encodeURIComponent(res.folder_name);
 
-            downloadResumePdf.href = `/api/download/${folder}/${prefix}_Tailored_Resume.pdf`;
-            downloadResumeDocx.href = `/api/download/${folder}/${prefix}_Tailored_Resume.docx`;
-            downloadCoverPdf.href = `/api/download/${folder}/${prefix}_Cover_Letter.pdf`;
-            downloadCoverDocx.href = `/api/download/${folder}/${prefix}_Cover_Letter.docx`;
+            const downloadTargets = [
+              [downloadResumePdf, `/api/download/${folder}/${prefix}_Tailored_Resume.pdf`, 'Resume PDF'],
+              [downloadResumeDocx, `/api/download/${folder}/${prefix}_Tailored_Resume.docx`, 'Resume DOCX'],
+              [downloadCoverPdf, `/api/download/${folder}/${prefix}_Cover_Letter.pdf`, 'Cover Letter PDF'],
+              [downloadCoverDocx, `/api/download/${folder}/${prefix}_Cover_Letter.docx`, 'Cover Letter DOCX'],
+            ];
+            for (const [el, url] of downloadTargets) {
+              el.href = url;
+              el.classList.remove('unavailable');
+              el.removeAttribute('aria-disabled');
+            }
 
             if (res.email) {
               generatedEmailBadge.textContent = res.email;
@@ -478,6 +519,20 @@ document.addEventListener('DOMContentLoaded', () => {
               if (viewportOrbState) viewportOrbState.textContent = 'STATE: SHAPING';
             }
             logTerminal('Automation successfully completed. Tailored documents ready for export.', 'highlight');
+
+            // Verify each file actually exists before offering the button.
+            Promise.all(
+              downloadTargets.map(async ([el, url, label]) => {
+                try {
+                  const head = await fetch(url, { method: 'HEAD' });
+                  if (!head.ok) throw new Error(String(head.status));
+                } catch (_) {
+                  el.classList.add('unavailable');
+                  el.setAttribute('aria-disabled', 'true');
+                  logTerminal(`Warning: ${label} is not available for download.`, 'error');
+                }
+              })
+            );
           }
         }
       }
@@ -486,14 +541,33 @@ document.addEventListener('DOMContentLoaded', () => {
       formStatusBadge.textContent = 'COMPLETED';
       systemStatusLabel.textContent = 'System Ready';
     } catch (err) {
-      logTerminal(`Automation Failure: ${err.message}`, 'error');
-      runStatus.textContent = 'FAILED';
-      formStatusBadge.textContent = 'ERROR';
-      systemStatusLabel.textContent = 'Pipeline Fault';
+      if (err.cancelled) {
+        logTerminal('Run cancelled by user. Browser session closed.', 'highlight');
+        runStatus.textContent = 'CANCELLED';
+        formStatusBadge.textContent = 'CANCELLED';
+        systemStatusLabel.textContent = 'System Ready';
+        if (viewportOrb) {
+          viewportOrb.setState('breathing');
+          if (viewportOrbState) viewportOrbState.textContent = 'STATE: BREATHING';
+        }
+      } else if (err.busy) {
+        logTerminal(`Pipeline Busy: ${err.message}`, 'error');
+        runStatus.textContent = 'IDLE';
+        formStatusBadge.textContent = 'STANDBY';
+        systemStatusLabel.textContent = 'Autonomous Engine Ready';
+        updateStepper(0);
+      } else {
+        logTerminal(`Automation Failure: ${err.message}`, 'error');
+        runStatus.textContent = 'FAILED';
+        formStatusBadge.textContent = 'ERROR';
+        systemStatusLabel.textContent = 'Pipeline Fault';
+      }
     } finally {
       submitBtn.disabled = false;
       submitBtn.classList.remove('loading');
       submitBtnText.textContent = 'Launch Swooped Pipeline';
+      cancelRunBtn.hidden = true;
+      cancelRunBtn.disabled = false;
       if (submitBtnOrb) {
         submitBtnOrb.pause();
         submitBtnOrbCanvas.style.display = 'none';
@@ -501,6 +575,25 @@ document.addEventListener('DOMContentLoaded', () => {
       if (topbarOrb) {
         topbarOrb.setState('breathing');
       }
+    }
+  });
+
+  // Cancel button: ask the server to stop the active run at its next
+  // stage checkpoint. The SSE stream reports the result.
+  cancelRunBtn.addEventListener('click', async () => {
+    cancelRunBtn.disabled = true;
+    try {
+      const res = await fetch('/api/cancel', { method: 'POST' });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok) {
+        logTerminal(body.message || 'Cancellation requested.', 'highlight');
+      } else {
+        logTerminal(`Cancel failed: ${body.detail || `HTTP ${res.status}`}`, 'error');
+        cancelRunBtn.disabled = false;
+      }
+    } catch (err) {
+      logTerminal(`Cancel failed: ${err.message}`, 'error');
+      cancelRunBtn.disabled = false;
     }
   });
 

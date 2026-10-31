@@ -1095,3 +1095,59 @@ body {
   color: #ffffff;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.6), 0 0 24px rgba(186, 208, 255, 0.4);
 }
+
+/* --------------------------------------------------------------------------
+   Run Control: submit + cancel row
+   -------------------------------------------------------------------------- */
+.cta-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.cta-row .cta-button {
+  width: auto;
+  flex: 1;
+  margin-top: 0;
+}
+
+.cancel-button {
+  height: var(--btn-h);
+  padding: 0 20px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: var(--btn);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  transition: all 0.25s ease;
+}
+
+.cancel-button:hover {
+  border-color: rgba(255, 110, 110, 0.6);
+  background: rgba(255, 70, 70, 0.14);
+}
+
+.cancel-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* Download tiles verified missing via HEAD */
+.doc-download-btn.unavailable {
+  opacity: 0.35;
+  pointer-events: none;
+  text-decoration: line-through;
+}
+
+/* Telemetry message types (logTerminal) */
+.terminal-msg.error {
+  color: #ff7b7b;
+}
+
+.terminal-msg.highlight {
+  color: #9ecbff;
+}
